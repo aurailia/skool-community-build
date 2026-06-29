@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What You Could Build</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap');
+  :root {
+    --ivory: #FBF7F0; --ink: #3A2558; --ink-soft: #5C3D7E;
+    --lilac-deep: #9B6DC8; --lilac-mid: #C4A8E8; --lilac-soft: #E8D9F4; --lilac-wash: #F2E9F8;
+    --pink-vibrant: #E089BF; --pink-soft: #F4B8DA; --pink-wash: #FCE7F1; --gold: #C9A227;
+    --pink-glow: rgba(224,137,191,0.32); --lilac-glow: rgba(155,109,200,0.3);
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --mono: 'SF Mono', Menlo, Monaco, monospace;
+    --grad-magical: linear-gradient(135deg, #E089BF 0%, #C4A8E8 50%, #9B6DC8 100%);
+    --grad-pastel: linear-gradient(135deg, #F4B8DA 0%, #C4A8E8 100%);
+    --grad-deep: linear-gradient(135deg, #9B6DC8 0%, #5C3D7E 100%);
+    --nav-w: 270px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--ivory); }
+  body {
+    font-family: var(--sans); color: var(--ink); line-height: 1.6; min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 15% 8%, rgba(244,184,218,0.22), transparent 50%),
+      radial-gradient(ellipse at 85% 18%, rgba(196,168,232,0.2), transparent 55%),
+      radial-gradient(ellipse at 50% 92%, rgba(224,137,191,0.1), transparent 60%),
+      var(--ivory);
+  }
+  @keyframes twinkle { 0%,100%{opacity:0;transform:scale(0.6) rotate(0)} 50%{opacity:0.85;transform:scale(1.1) rotate(180deg)} }
+  @keyframes float-y { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  @keyframes fade-up { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes spin-slow { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+  @keyframes gradient-pan { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+  @keyframes pop-check { 0%{transform:scale(0)} 60%{transform:scale(1.25)} 100%{transform:scale(1)} }
+
+  .app { display: flex; min-height: 100vh; }
+
+  /* NAV */
+  .nav { width: var(--nav-w); flex-shrink: 0; position: sticky; top: 0; align-self: flex-start; height: 100vh; overflow-y: auto; background: linear-gradient(180deg, #2E1D47 0%, #3A2558 55%, #4A2F6E 100%); padding: 32px 22px; color: #fff; z-index: 50; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .nb-star { color: var(--pink-soft); font-size: 16px; animation: spin-slow 8s linear infinite; }
+  .nb-text { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--pink-soft); }
+  .nav-title { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 26px; line-height: 1.1; margin-bottom: 30px; }
+  .nav-items { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .nav-item { display: flex; align-items: flex-start; gap: 13px; padding: 14px 16px; border-radius: 14px; cursor: pointer; transition: all 0.22s ease; border: 1.5px solid transparent; }
+  .nav-item:hover { background: rgba(255,255,255,0.07); }
+  .nav-item.active { background: rgba(255,255,255,0.12); border-color: rgba(244,184,218,0.4); }
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; }
+  .ni-num { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; flex-shrink: 0; transition: all 0.22s ease; }
+  .nav-item.active .ni-num { background: var(--grad-pastel); color: var(--ink); }
+  .nav-item.done .ni-num { background: var(--pink-soft); color: var(--ink); }
+  .ni-body { flex: 1; display: flex; flex-direction: column; }
+  .ni-label { display: block; font-weight: 600; font-size: 14.5px; line-height: 1.2; }
+  .ni-sub { display: block; font-size: 11.5px; color: rgba(255,255,255,0.6); margin-top: 3px; line-height: 1.3; }
+  .nav-foot { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.12); font-family: var(--serif); font-style: italic; font-size: 15px; color: rgba(255,255,255,0.78); line-height: 1.6; }
+  .nav-foot .mark { color: var(--pink-soft); }
+  .mobile-bar { display: none; }
+
+  .main { flex: 1; min-width: 0; position: relative; }
+  .main::before {
+    content: ''; position: fixed; top: 0; right: 0; bottom: 0; left: var(--nav-w); z-index: 0; pointer-events: none;
+    background-image: url('background.png');
+    background-size: cover; background-position: center; background-attachment: fixed;
+  }
+  .main::after {
+    content: ''; position: fixed; top: 0; right: 0; bottom: 0; left: var(--nav-w); z-index: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(46,29,71,0.32) 0%, rgba(46,29,71,0.18) 40%, rgba(46,29,71,0.3) 100%);
+  }
+  .sparkle-field { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .sparkle { position: absolute; color: var(--pink-vibrant); opacity: 0; animation: twinkle 5s ease-in-out infinite; }
+  .sparkle.lilac { color: var(--lilac-mid); }
+  .sparkle.s1{top:8%;left:6%;font-size:14px;animation-delay:0s}.sparkle.s2{top:20%;left:90%;font-size:12px;animation-delay:1.2s}
+  .sparkle.s3{top:55%;left:4%;font-size:13px;animation-delay:2.1s}.sparkle.s4{top:75%;left:92%;font-size:15px;animation-delay:0.6s}
+
+  .stage { display: none; position: relative; z-index: 1; max-width: 1000px; margin: 40px auto; padding: 48px 44px 70px; animation: fade-up 0.4s ease; background: rgba(255,255,255,0.96); backdrop-filter: blur(6px); border-radius: 28px; box-shadow: 0 30px 80px rgba(46,29,71,0.3), 0 2px 0 rgba(255,255,255,0.5) inset; }
+  .stage.active { display: block; }
+
+  .step-head { margin-bottom: 30px; }
+  .step-badge { display: inline-flex; align-items: center; gap: 9px; background: var(--grad-magical); color: #fff; padding: 7px 16px 7px 9px; border-radius: 100px; font-size: 12px; font-weight: 600; box-shadow: 0 6px 16px var(--pink-glow); margin-bottom: 16px; }
+  .sb-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.28); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; }
+  .step-h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(32px, 5vw, 50px); line-height: 1.05; letter-spacing: -0.015em; color: var(--ink); margin-bottom: 14px; }
+  .step-h1 em { font-style: italic; color: var(--lilac-deep); }
+  .step-do { display: flex; align-items: flex-start; gap: 12px; background: #fff; border: 1.5px solid rgba(155,109,200,0.2); border-left: 4px solid var(--pink-vibrant); border-radius: 0 16px 16px 0; padding: 16px 22px; max-width: 680px; box-shadow: 0 4px 16px rgba(155,109,200,0.07); }
+  .sd-icon { font-size: 20px; flex-shrink: 0; }
+  .sd-text { font-size: 15px; color: var(--ink); line-height: 1.55; }
+  .sd-text b { font-weight: 700; }
+
+  .sh-hero { text-align: center; padding: 10px 0 8px; }
+  .sh-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--lilac-deep); margin-bottom: 18px; }
+  .sh-title { font-family: var(--serif); font-weight: 600; font-size: clamp(40px, 7vw, 76px); line-height: 1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(180deg, #E089BF 0%, #C4A8E8 45%, #9B6DC8 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 6px 20px rgba(224,137,191,0.3)); }
+  .sh-title em { font-style: italic; font-weight: 500; }
+  .sh-lede { max-width: 600px; margin: 0 auto 40px; font-size: 18px; line-height: 1.7; color: var(--ink-soft); font-weight: 300; }
+  .sh-lede em { font-style: italic; color: var(--lilac-deep); }
+  .sh-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 40px; text-align: left; }
+  .sh-step { background: #fff; border: 1.5px solid rgba(155,109,200,0.18); border-radius: 20px; padding: 24px; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(155,109,200,0.06); }
+  .sh-step:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(155,109,200,0.13); border-color: var(--lilac-mid); }
+  .sh-step-num { width: 38px; height: 38px; border-radius: 50%; background: var(--grad-magical); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 20px; font-weight: 600; margin-bottom: 14px; box-shadow: 0 5px 14px var(--pink-glow); }
+  .sh-step-title { font-family: var(--serif); font-weight: 600; font-size: 21px; color: var(--ink); margin-bottom: 7px; line-height: 1.2; }
+  .sh-step-desc { font-size: 14px; color: var(--ink-soft); line-height: 1.55; font-weight: 300; }
+  .sh-note { background: var(--lilac-wash); border-radius: 18px; padding: 24px 28px; max-width: 680px; margin: 0 auto 36px; text-align: left; }
+  .sh-note-title { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 20px; color: var(--ink); margin-bottom: 8px; }
+  .sh-note-text { font-size: 14.5px; color: var(--ink-soft); line-height: 1.65; }
+  .sh-note-text b { color: var(--ink); }
+
+  .btn { padding: 14px 30px; border-radius: 100px; border: none; font-family: var(--sans); font-weight: 600; font-size: 14.5px; cursor: pointer; transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 9px; }
+  .btn-primary { background: var(--grad-magical); color: #fff; box-shadow: 0 8px 22px var(--pink-glow); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px var(--pink-glow); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-ghost { background: #fff; color: var(--lilac-deep); border: 1.5px solid rgba(155,109,200,0.3); }
+  .btn-ghost:hover { background: var(--lilac-wash); border-color: var(--lilac-mid); }
+
+  .filter-label { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lilac-deep); margin-bottom: 12px; }
+  .step-eyebrow { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+  .step-eyebrow .se-num { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; background: var(--grad-magical); padding: 4px 11px; border-radius: 100px; white-space: nowrap; box-shadow: 0 4px 12px var(--pink-glow); }
+  .step-eyebrow .se-text { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lilac-deep); line-height: 1.4; }
+  .step-eyebrow.gap-top { margin-top: 34px; }
+  .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+  .path-btn { display: flex; align-items: center; gap: 9px; padding: 10px 20px; border-radius: 100px; border: 1.5px solid rgba(155,109,200,0.25); background: #fff; color: var(--ink); font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.25s ease; }
+  .path-btn .pe { font-size: 17px; }
+  .path-btn:hover { border-color: var(--lilac-mid); background: var(--lilac-wash); transform: translateY(-1px); }
+  .path-btn.active { background: var(--grad-magical); color: #fff; border-color: transparent; box-shadow: 0 6px 18px var(--pink-glow); }
+
+  .gift-group { margin-bottom: 36px; animation: fade-up 0.4s ease; }
+  .gift-group.hidden { display: none; }
+  .gift-group-head { display: flex; align-items: center; gap: 13px; margin-bottom: 16px; padding-bottom: 11px; border-bottom: 1.5px solid rgba(155,109,200,0.16); }
+  .gge { font-size: 27px; animation: float-y 4s ease-in-out infinite; }
+  .ggn { font-family: var(--serif); font-weight: 600; font-size: 26px; background: linear-gradient(135deg, var(--ink) 0%, var(--lilac-deep) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .ggt { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink-soft); }
+  .gift-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 13px; }
+  .gift-card { background: #fff; padding: 19px 21px; border-radius: 16px; border: 1.5px solid rgba(155,109,200,0.18); box-shadow: 0 2px 8px rgba(155,109,200,0.06); transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer; position: relative; overflow: hidden; min-height: 98px; display: flex; flex-direction: column; justify-content: center; }
+  .pick-check { position: absolute; top: 11px; right: 11px; width: 23px; height: 23px; border-radius: 50%; background: var(--grad-magical); color: #fff; display: none; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 3px 8px var(--pink-glow); }
+  .gift-card:hover { border-color: var(--lilac-mid); box-shadow: 0 12px 28px rgba(224,137,191,0.18), 0 0 0 4px rgba(244,184,218,0.14); transform: translateY(-3px) scale(1.02); background: linear-gradient(135deg, #fff 0%, var(--pink-wash) 100%); }
+  .gift-card.selected { border-color: var(--pink-vibrant); background: linear-gradient(135deg, var(--pink-wash) 0%, var(--lilac-wash) 100%); box-shadow: 0 8px 24px var(--pink-glow), 0 0 0 4px rgba(224,137,191,0.16); }
+  .gift-card.selected .pick-check { display: flex; animation: pop-check 0.4s ease; }
+  .gift-card.locked { opacity: 0.4; cursor: not-allowed; }
+  .gift-card.locked:hover { transform: none; box-shadow: 0 2px 8px rgba(155,109,200,0.06); border-color: rgba(155,109,200,0.18); background: #fff; }
+  .gift-card.soon { opacity: 0.6; cursor: default; }
+  .gift-card.soon:hover { transform: none; box-shadow: 0 2px 8px rgba(155,109,200,0.06); border-color: rgba(155,109,200,0.18); background: #fff; }
+  .gift-name { font-family: var(--serif); font-weight: 600; font-size: 21px; color: var(--ink); line-height: 1.15; margin-bottom: 4px; padding-right: 26px; }
+  .gift-blurb { font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; font-weight: 300; }
+  .gift-soon-tag { display: inline-block; margin-top: 8px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lilac-deep); background: var(--lilac-wash); padding: 3px 9px; border-radius: 100px; align-self: flex-start; }
+
+  .membership-band { margin-bottom: 34px; }
+  .mb-eyebrow { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+  .mb-eyebrow .se-num { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; background: var(--grad-magical); padding: 4px 11px; border-radius: 100px; white-space: nowrap; box-shadow: 0 4px 12px var(--pink-glow); }
+  .mb-eyebrow .se-text { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lilac-deep); }
+  .mb-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .mb-card { background: #fff; border: 2px solid rgba(155,109,200,0.2); border-radius: 20px; padding: 24px; cursor: pointer; transition: all 0.22s ease; position: relative; box-shadow: 0 4px 16px rgba(155,109,200,0.06); }
+  .mb-card:hover { border-color: var(--lilac-mid); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(155,109,200,0.13); }
+  .mb-card.selected { border-color: var(--pink-vibrant); background: linear-gradient(135deg, var(--pink-wash) 0%, var(--lilac-wash) 100%); box-shadow: 0 10px 28px var(--pink-glow); }
+  .mb-card-check { position: absolute; top: 16px; right: 16px; width: 26px; height: 26px; border-radius: 50%; background: var(--grad-magical); color: #fff; display: none; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 4px 10px var(--pink-glow); }
+  .mb-card.selected .mb-card-check { display: flex; animation: pop-check 0.3s ease; }
+  .mb-card-name { font-family: var(--serif); font-weight: 600; font-size: 24px; color: var(--ink); margin-bottom: 4px; padding-right: 30px; }
+  .mb-card-tag { font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--lilac-deep); margin-bottom: 14px; }
+  .mb-card-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 14px; }
+  .mb-levels { display: flex; flex-direction: column; gap: 7px; }
+  .mb-level { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; color: var(--ink); }
+  .mb-level-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pink-vibrant); flex-shrink: 0; transform: translateY(-1px); }
+  .mb-level b { font-weight: 700; }
+  .lane-progress-hint { font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; font-style: italic; font-family: var(--serif); }
+  .lane-builder .challenge-note { background: var(--lilac-wash); border-radius: 12px; padding: 12px 16px; font-size: 13px; color: var(--ink-soft); line-height: 1.5; margin-bottom: 16px; }
+  .lane-chip { padding: 11px 20px; border-radius: 14px; border: 1.5px solid rgba(155,109,200,0.28); background: #fff; font-size: 14px; font-weight: 600; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(155,109,200,0.06); }
+  .lane-chip:hover { border-color: var(--lilac-mid); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(155,109,200,0.13); }
+  .lane-chip.active { background: var(--grad-deep); color: #fff; border-color: transparent; box-shadow: 0 6px 16px var(--lilac-glow); }
+  .lane-chip.done { border-color: var(--pink-soft); }
+  .lane-chip.done:not(.active) { background: var(--pink-wash); color: var(--lilac-deep); }
+  .lane-chip .lc { font-family: var(--mono); font-size: 11px; padding: 2px 8px; border-radius: 100px; background: rgba(155,109,200,0.12); color: var(--lilac-deep); }
+  .lane-chip.active .lc { background: rgba(255,255,255,0.25); color: #fff; }
+  .lane-chip .lc.full { background: var(--pink-soft); color: var(--ink); }
+  .lane-builder { display: none; }
+  .lane-builder.active { display: block; animation: fade-up 0.4s ease; }
+  .lane-desc { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--ink-soft); margin-bottom: 20px; }
+  .idea-list { display: grid; gap: 12px; }
+  .idea-item { border-radius: 16px; border: 1.5px solid rgba(155,109,200,0.16); overflow: hidden; transition: all 0.25s ease; background: #fff; }
+  .idea-item:hover { border-color: var(--lilac-mid); }
+  .idea-item.picked { border-color: var(--pink-vibrant); box-shadow: 0 8px 22px var(--pink-glow); }
+  .idea-top { display: flex; align-items: stretch; }
+  .idea-pick-btn { flex-shrink: 0; width: 56px; border: none; border-right: 1.5px solid rgba(155,109,200,0.12); background: var(--lilac-wash); color: var(--lilac-deep); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all 0.25s ease; }
+  .idea-pick-btn:hover { background: var(--lilac-soft); }
+  .idea-item.picked .idea-pick-btn { background: var(--grad-magical); color: #fff; }
+  .idea-pick-btn .ci { animation: pop-check 0.4s ease; }
+  .idea-main { flex: 1; padding: 16px 20px; cursor: pointer; user-select: none; display: flex; align-items: flex-start; gap: 12px; }
+  .idea-headings { flex: 1; }
+  .idea-name { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--ink); line-height: 1.2; }
+  .idea-teaser { font-size: 13px; color: var(--ink-soft); margin-top: 2px; font-weight: 300; }
+  .gift-tag { display: inline-block; margin-top: 7px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lilac-deep); background: var(--lilac-wash); padding: 3px 9px; border-radius: 100px; }
+  .idea-chev { color: var(--lilac-deep); font-size: 13px; transition: transform 0.3s ease; margin-top: 6px; flex-shrink: 0; }
+  .idea-item.open .idea-chev { transform: rotate(180deg); }
+  .idea-deeper { max-height: 0; overflow: hidden; transition: max-height 0.45s ease; }
+  .idea-item.open .idea-deeper { max-height: 1600px; }
+  .idea-deeper-inner { padding: 4px 22px 22px 68px; }
+  .deeper-block { margin-bottom: 15px; }
+  .deeper-block:last-child { margin-bottom: 0; }
+  .deeper-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lilac-deep); margin-bottom: 6px; }
+  .deeper-text { font-size: 14.5px; color: var(--ink); line-height: 1.6; }
+  .deeper-text.include { background: var(--lilac-wash); border-left: 3px solid var(--lilac-deep); padding: 12px 18px; border-radius: 0 12px 12px 0; }
+  .deeper-text.start { background: var(--pink-wash); border-left: 3px solid var(--pink-vibrant); padding: 12px 18px; border-radius: 0 12px 12px 0; }
+  .create-steps { list-style: none; counter-reset: cstep; margin: 0; padding: 0; display: grid; gap: 9px; }
+  .create-steps li { counter-increment: cstep; position: relative; padding: 10px 16px 10px 44px; background: var(--pink-wash); border-radius: 12px; font-size: 14px; color: var(--ink); line-height: 1.55; }
+  .create-steps li::before { content: counter(cstep); position: absolute; left: 12px; top: 9px; width: 22px; height: 22px; border-radius: 50%; background: var(--grad-magical); color: #fff; font-family: var(--mono); font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+  .lane-cap-note { text-align: center; font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink-soft); margin-top: 18px; transition: color 0.3s ease; }
+  .stage-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 30px; }
+
+  .plan-empty-state { text-align: center; padding: 50px 20px; }
+  .pe-mark { font-family: var(--serif); font-style: italic; font-size: 26px; color: var(--lilac-deep); margin-bottom: 10px; }
+  .plan-card { background: #fff; border-radius: 24px; border: 1.5px solid rgba(155,109,200,0.2); box-shadow: 0 16px 48px rgba(155,109,200,0.14); overflow: hidden; margin-bottom: 30px; }
+  .plan-card-head { background: var(--grad-magical); background-size: 200% 200%; animation: gradient-pan 8s ease-in-out infinite; padding: 32px 36px; color: #fff; text-align: center; position: relative; }
+  .plan-card-head::before { content:'✦'; position:absolute; top:16px; left:50%; transform:translateX(-50%); font-size:13px; color:rgba(255,255,255,0.6); animation:spin-slow 6s linear infinite; }
+  .plan-card-kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.88); margin: 12px 0 8px; }
+  .plan-card-title { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 34px; line-height: 1.1; }
+  .plan-card-date { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-top: 8px; }
+  .plan-card-body { padding: 30px 36px; }
+  .community-read { background: linear-gradient(135deg, var(--pink-wash) 0%, var(--lilac-wash) 100%); border-radius: 18px; padding: 26px 28px; margin-bottom: 30px; border: 1.5px solid rgba(155,109,200,0.16); }
+  .cr-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lilac-deep); margin-bottom: 12px; }
+  .cr-para { font-family: var(--serif); font-size: 21px; line-height: 1.55; color: var(--ink); margin-bottom: 20px; }
+  .cr-pricing { background: rgba(255,255,255,0.7); border-radius: 14px; padding: 18px 22px; border-left: 3px solid var(--pink-vibrant); }
+  .cr-pricing-title { font-family: var(--serif); font-weight: 600; font-size: 19px; color: var(--ink); margin-bottom: 6px; }
+  .cr-pricing-body { font-size: 14.5px; color: var(--ink-soft); line-height: 1.6; }
+  .plan-lane { margin-bottom: 26px; }
+  .plan-lane:last-child { margin-bottom: 0; }
+  .plan-lane-title { font-family: var(--serif); font-weight: 600; font-size: 22px; color: var(--ink); margin-bottom: 13px; display: flex; align-items: center; gap: 9px; }
+  .plan-item { background: var(--lilac-wash); border-left: 3px solid var(--lilac-deep); padding: 17px 21px; border-radius: 0 14px 14px 0; margin-bottom: 12px; }
+  .plan-item:last-child { margin-bottom: 0; }
+  .plan-item-name { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--ink); line-height: 1.2; margin-bottom: 11px; }
+  .pi-gift { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lilac-deep); background: rgba(255,255,255,0.7); padding: 3px 9px; border-radius: 100px; vertical-align: middle; margin-left: 6px; }
+  .pi-block { margin-bottom: 11px; }
+  .pi-block:last-child { margin-bottom: 0; }
+  .pi-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lilac-deep); margin-bottom: 4px; }
+  .pi-text { font-size: 14px; color: var(--ink); line-height: 1.55; }
+  .pi-steps { list-style: decimal; margin: 0; padding-left: 20px; display: grid; gap: 5px; }
+  .pi-steps li { font-size: 14px; color: var(--ink); line-height: 1.5; padding-left: 4px; }
+  .plan-empty { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink-soft); }
+  .plan-sign { text-align: center; padding: 22px 36px 30px; border-top: 1px solid rgba(155,109,200,0.14); }
+  .plan-sign-text { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--ink-soft); line-height: 1.6; }
+  .plan-sign-text .mark { color: var(--pink-vibrant); }
+  .plan-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }
+
+  .plan-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .plan-tab { padding: 10px 18px; border-radius: 100px; border: 1.5px solid rgba(155,109,200,0.22); background: #fff; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 7px; }
+  .plan-tab:hover { border-color: var(--lilac-mid); }
+  .plan-tab.active { background: var(--grad-deep); color: #fff; border-color: transparent; box-shadow: 0 5px 14px var(--lilac-glow); }
+  .plan-tab .pt-count { font-family: var(--mono); font-size: 10px; opacity: 0.85; }
+  .plan-panel { display: none; animation: fade-up 0.35s ease; }
+  .plan-panel.active { display: block; }
+  .panel-lane-title { font-family: var(--serif); font-weight: 600; font-size: clamp(24px, 4vw, 30px); color: var(--ink); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+
+  .ms-intro { font-family: var(--serif); font-size: 19px; line-height: 1.55; color: var(--ink); margin-bottom: 24px; }
+  .ms-intro b { color: var(--lilac-deep); font-style: italic; }
+  .ms-suggested { background: var(--lilac-wash); border-radius: 16px; padding: 18px 22px; margin-bottom: 22px; font-size: 14px; color: var(--ink-soft); line-height: 1.6; border-left: 3px solid var(--pink-vibrant); }
+  .ms-suggested b { color: var(--ink); }
+  .ms-tier-picks { margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(155,109,200,0.3); }
+  .ms-picks-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lilac-deep); margin-bottom: 10px; }
+  .ms-tier { border-radius: 18px; padding: 22px 24px; margin-bottom: 16px; border: 1.5px solid rgba(155,109,200,0.18); }
+  .ms-tier-free { background: linear-gradient(135deg, var(--pink-wash) 0%, var(--lilac-wash) 100%); }
+  .ms-tier-low { background: #fff; }
+  .ms-tier-prem { background: var(--lilac-wash); border-color: rgba(155,109,200,0.3); }
+  .ms-tier-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .ms-tier-name { font-family: var(--serif); font-weight: 600; font-size: 22px; color: var(--ink); }
+  .ms-tier-price { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--lilac-deep); background: rgba(255,255,255,0.7); padding: 4px 12px; border-radius: 100px; }
+  .ms-tier-why { font-size: 14px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px; }
+  .ms-item { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,255,255,0.7); border-radius: 12px; padding: 12px 15px; margin-bottom: 8px; }
+  .ms-item:last-child { margin-bottom: 0; }
+  .ms-item-star { border: 1.5px solid var(--pink-vibrant); background: #fff; }
+  .ms-item-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pink-vibrant); flex-shrink: 0; margin-top: 7px; }
+  .ms-item-name { font-weight: 600; font-size: 14.5px; color: var(--ink); }
+  .ms-item-kind { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lilac-deep); }
+  .ms-tip { font-size: 13px; color: var(--ink-soft); font-style: italic; font-family: var(--serif); margin-top: 10px; line-height: 1.5; }
+  .ms-none { font-size: 13px; color: var(--ink-soft); font-style: italic; padding: 4px 0; }
+  .ms-empty { text-align: center; padding: 40px 20px; }
+  .ms-empty-title { font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--ink); margin-bottom: 10px; }
+  .ms-empty p { color: var(--ink-soft); line-height: 1.6; max-width: 480px; margin: 0 auto 22px; }
+
+  .todo-section { background: #fff; border-radius: 24px; border: 1.5px solid rgba(155,109,200,0.2); box-shadow: 0 12px 36px rgba(155,109,200,0.1); overflow: hidden; margin-bottom: 30px; }
+  .todo-head { background: var(--grad-deep); padding: 26px 30px; color: #fff; position: relative; }
+  .todo-change-btn { position: absolute; top: 22px; right: 24px; background: rgba(255,255,255,0.16); border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-family: var(--sans); font-size: 12.5px; font-weight: 600; padding: 8px 15px; border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
+  .todo-change-btn:hover { background: rgba(255,255,255,0.28); }
+  .todo-head-title { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 26px; line-height: 1.1; margin-bottom: 6px; }
+  .todo-head-sub { font-size: 13.5px; color: rgba(255,255,255,0.82); font-weight: 300; line-height: 1.5; }
+  .todo-progress { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.85); margin-top: 10px; }
+  .todo-body { padding: 26px 30px; }
+  .todo-instruction { font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--ink-soft); margin-bottom: 18px; }
+  .pick3-list { display: grid; gap: 10px; margin-bottom: 20px; }
+  .pick3-item { display: flex; align-items: center; gap: 13px; padding: 14px 18px; border-radius: 14px; border: 1.5px solid rgba(155,109,200,0.18); background: var(--lilac-wash); cursor: pointer; transition: all 0.22s ease; }
+  .pick3-item:hover { border-color: var(--lilac-mid); }
+  .pick3-item.chosen { border-color: var(--pink-vibrant); background: var(--pink-wash); box-shadow: 0 5px 16px var(--pink-glow); }
+  .pick3-item.dimmed { opacity: 0.45; }
+  .pick3-item.is-done .p3-name { text-decoration: line-through; text-decoration-color: rgba(31,107,92,0.55); color: var(--ink-soft); }
+  .pick3-item.is-done .p3-box { background: #1F6B5C; border-color: transparent; }
+  .pick3-item.is-done { background: rgba(31,107,92,0.05); }
+  .p3-box { width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--lilac-mid); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; transition: all 0.22s ease; }
+  .pick3-item.chosen .p3-box { background: var(--grad-magical); border-color: transparent; }
+  .p3-body { flex: 1; }
+  .p3-name { font-family: var(--serif); font-weight: 600; font-size: 18px; color: var(--ink); line-height: 1.2; }
+  .p3-meta { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+  .pick3-confirm { text-align: center; }
+  .todo-list { display: grid; gap: 14px; }
+  .todo-item { border-radius: 16px; border: 1.5px solid rgba(155,109,200,0.18); overflow: hidden; transition: all 0.25s ease; }
+  .todo-item.done { border-color: rgba(31,107,92,0.4); background: rgba(31,107,92,0.04); }
+  .todo-item.later { opacity: 0.66; }
+  .todo-item-head { display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; }
+  .todo-check { width: 28px; height: 28px; border-radius: 9px; border: 2px solid var(--lilac-mid); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; transition: all 0.22s ease; margin-top: 2px; }
+  .todo-item.done .todo-check { background: #1F6B5C; border-color: transparent; }
+  .todo-info { flex: 1; }
+  .todo-name { font-family: var(--serif); font-weight: 600; font-size: 20px; color: var(--ink); line-height: 1.2; }
+  .todo-item.done .todo-name { text-decoration: line-through; text-decoration-color: rgba(31,107,92,0.5); color: var(--ink-soft); }
+  .todo-lane-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lilac-deep); margin-top: 4px; display: inline-block; }
+  .todo-later-btn { background: none; border: 1.5px solid rgba(155,109,200,0.3); color: var(--lilac-deep); border-radius: 100px; font-size: 11.5px; font-weight: 600; padding: 5px 13px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
+  .todo-later-btn:hover { background: var(--lilac-wash); }
+  .todo-item.later .todo-later-btn { background: var(--lilac-soft); }
+  .prompt-wrap { border-top: 1px solid rgba(155,109,200,0.14); padding: 16px 20px; background: var(--lilac-wash); }
+  .prompt-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lilac-deep); font-weight: 600; user-select: none; }
+  .pt-chev { transition: transform 0.3s ease; }
+  .prompt-wrap.open .pt-chev { transform: rotate(180deg); }
+  .prompt-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .prompt-wrap.open .prompt-body { max-height: 1400px; }
+  .prompt-box { background: #2E1D47; color: #EDE3F7; border-radius: 14px; padding: 18px 20px; margin-top: 14px; font-size: 13px; line-height: 1.65; white-space: pre-wrap; font-family: var(--sans); max-height: 320px; overflow-y: auto; }
+  .prompt-copy { margin-top: 12px; }
+  .copy-btn { background: var(--grad-magical); color: #fff; border: none; border-radius: 100px; padding: 10px 22px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.22s ease; box-shadow: 0 5px 14px var(--pink-glow); }
+  .copy-btn:hover { transform: translateY(-1px); }
+  .copy-btn.copied { background: #1F6B5C; box-shadow: none; }
+  .wave-done-banner { background: linear-gradient(135deg, var(--pink-wash), var(--lilac-wash)); border: 1.5px dashed var(--pink-vibrant); border-radius: 18px; padding: 24px 28px; text-align: center; margin-top: 22px; }
+  .wd-title { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 22px; color: var(--ink); margin-bottom: 8px; }
+  .wd-text { font-size: 14px; color: var(--ink-soft); margin-bottom: 16px; line-height: 1.55; }
+
+  @media (max-width: 900px) {
+    .nav { position: fixed; left: 0; top: 0; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 0 0 40px rgba(0,0,0,0.3); }
+    .nav.open { transform: translateX(0); }
+    .app { display: block; }
+    .mobile-bar { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; background: linear-gradient(135deg, #3A2558, #4A2F6E); color: #fff; padding: 14px 18px; }
+    .mb-title { font-family: var(--serif); font-style: italic; font-size: 19px; }
+    .mb-burger { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 42px; height: 42px; border-radius: 12px; font-size: 18px; cursor: pointer; }
+    .nav-overlay { display: none; position: fixed; inset: 0; background: rgba(46,29,71,0.5); z-index: 45; }
+    .nav-overlay.show { display: block; }
+    .stage { padding: 30px 22px 60px; margin: 16px 12px; border-radius: 20px; }
+    .main::before, .main::after { left: 0; }
+    .idea-deeper-inner { padding: 4px 20px 20px 20px; }
+  }
+  @media (max-width: 560px) {
+    .gift-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .plan-card-body, .todo-body, .plan-card-head { padding-left: 20px; padding-right: 20px; }
+    .todo-change-btn { position: static; display: inline-block; margin-top: 14px; }
+    .mb-cards { grid-template-columns: 1fr; }
+  }
+  @media print {
+    @page { margin: 1.4cm; }
+    body { background: #fff !important; }
+    .main::before, .main::after { display: none !important; }
+    .nav, .mobile-bar, .nav-overlay, .sparkle-field, .step-head, .plan-actions, .todo-section, .stage-nav, .prompt-wrap, .plan-tabs { display: none !important; }
+    .stage { display: none !important; padding: 0 !important; }
+    #stage-plan { display: block !important; max-width: 100% !important; background: #fff !important; box-shadow: none !important; border-radius: 0 !important; margin: 0 !important; backdrop-filter: none !important; }
+    .plan-panel { display: block !important; }
+    .panel-lane-title { display: none !important; }
+    .plan-card { box-shadow: none !important; border: 1px solid #ddd !important; border-radius: 0 !important; margin: 0 !important; }
+    .plan-card-head { background: #6E4F9E !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .plan-item, .community-read { background: #F5EFFA !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; }
+    .plan-lane { break-inside: avoid-page; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav" id="nav">
+    <div class="nav-brand"><span class="nb-star">✦</span><span class="nb-text">Embody Wealth</span></div>
+    <div class="nav-title">What You Could Build</div>
+    <ul class="nav-items" id="navItems"></ul>
+    <div class="nav-foot">I believe in you.<br>To living our dreams.<br>Aurailia <span class="mark">✦</span></div>
+  </nav>
+  <div class="nav-overlay" id="navOverlay"></div>
+  <div class="main">
+    <div class="mobile-bar">
+      <span class="mb-title">What You Could Build</span>
+      <button class="mb-burger" id="burger">☰</button>
+    </div>
+    <div class="sparkle-field" aria-hidden="true">
+      <span class="sparkle s1">✦</span><span class="sparkle s2 lilac">★</span><span class="sparkle s3 lilac">✧</span><span class="sparkle s4">✦</span>
+    </div>
+
+    <section class="stage active" id="stage-start">
+      <div class="sh-hero">
+        <div class="sh-eyebrow">✦ Welcome</div>
+        <h1 class="sh-title">What could <em>you</em> build?</h1>
+        <p class="sh-lede">This is a little engine for your imagination. Tell it what you do, and it'll show you the <em>offers, artifacts, and experiences</em> you could create inside your own community. Then it helps you actually start.</p>
+      </div>
+      <div class="sh-steps">
+        <div class="sh-step"><div class="sh-step-num">1</div><div class="sh-step-title">Your Gifts</div><div class="sh-step-desc">Choose up to three of your main gifts. The things you carry and do, not who you help.</div></div>
+        <div class="sh-step"><div class="sh-step-num">2</div><div class="sh-step-title">Build Your Plan</div><div class="sh-step-desc">Move through offers, artifacts, and experiences. Add what lights you up, skip what doesn't.</div></div>
+        <div class="sh-step"><div class="sh-step-num">3</div><div class="sh-step-title">Your Plan</div><div class="sh-step-desc">Get your blueprint, a ready-to-use Claude prompt for each piece, and a checklist to keep you moving.</div></div>
+      </div>
+      <div class="sh-note">
+        <div class="sh-note-title">One gentle rule before you start</div>
+        <div class="sh-note-text">You're going to want to build everything. Don't. Pick your <b>first three</b> and build those well. A community grows from one thing done with love, not ten things half-started. The rest will keep.</div>
+      </div>
+      <div style="text-align:center;"><button class="btn btn-primary" id="startBtn">Let's begin →</button></div>
+    </section>
+
+    <section class="stage" id="stage-gifts">
+      <div class="step-head">
+        <div class="step-badge"><span class="sb-num">1</span> Step One of Three</div>
+        <h2 class="step-h1">Choose your <em>gifts</em></h2>
+        <div class="step-do"><span class="sd-icon">✦</span><div class="sd-text"><b>What to do:</b> Filter by what you do, then tap up to <b>three gifts total</b>. Just your main ones, the work you'd build a community around. Keeping it to three keeps you focused.</div></div>
+      </div>
+      <div class="step-eyebrow"><span class="se-num">Step 1</span><span class="se-text">Filter by what you do · tap as many as fit</span></div>
+      <div class="filter-row" id="filterRow"></div>
+      <div class="step-eyebrow gap-top"><span class="se-num">Step 2</span><span class="se-text">Select up to 3 main gifts total</span></div>
+      <div id="giftGroups"></div>
+      <div class="stage-nav"><span></span><button class="btn btn-primary" id="giftsNext" disabled>Build my plan →</button></div>
+    </section>
+
+    <section class="stage" id="stage-build">
+      <div class="step-head">
+        <div class="step-badge"><span class="sb-num">2</span> Step Two of Three</div>
+        <h2 class="step-h1">Build your <em>plan</em></h2>
+        <div class="step-do"><span class="sd-icon">💫</span><div class="sd-text"><b>What to do:</b> First choose how your membership works. Then pick your doorway challenge and work through the lanes. Tap a card to open it, hit the <b>+</b> to add it, up to <b>two per lane</b>.</div></div>
+      </div>
+      <div class="membership-band" id="membershipBand"></div>
+      <div class="lane-progress" id="laneProgress"></div>
+      <div class="lane-progress-hint" id="laneHint"></div>
+      <div id="laneBuilders"></div>
+      <p class="lane-cap-note" id="laneCapNote"></p>
+      <div class="stage-nav"><button class="btn btn-ghost" id="buildBack">← Back to gifts</button><button class="btn btn-primary" id="buildNext">See my plan ✦</button></div>
+    </section>
+
+    <section class="stage" id="stage-plan">
+      <div class="step-head">
+        <div class="step-badge"><span class="sb-num">3</span> Step Three of Three</div>
+        <h2 class="step-h1">Your <em>blueprint</em></h2>
+        <div class="step-do"><span class="sd-icon">✦</span><div class="sd-text"><b>What to do:</b> This is your plan. Look through the tabs, then open <b>Your Next Steps</b> and select the first three things to work on. Each one comes with a prompt you can paste straight into Claude to build it. You can download the whole plan as a PDF any time.</div></div>
+      </div>
+      <div id="planWrap"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const LANE_META = [
+  { id: 'offers', label: 'Offers', emoji: '💫', desc: "Ways to package your gift so it sells without trading every hour for one session." },
+  { id: 'artifacts', label: 'Artifacts', emoji: '✦', desc: "Tools you create once that your members use again and again. The daily rituals, growing libraries, and shared spaces that make your community the place people want to stay." },
+  { id: 'experiences', label: 'Experiences', emoji: '🌸', desc: "Live, felt moments that turn a quiet membership into a community people won't leave." }
+];
+
+const MEMBERSHIP_MODELS = [
+  { id: 'freemium', name: 'Freemium', tag: 'A free level, plus two paid levels above it',
+    desc: "You open the doors wide. Anyone can join the free level and start to feel your work, the everyday rituals and the warmth. The deeper transformation sits in your paid levels. People feel you before they pay you, and the ones who feel it want in.",
+    levels: ["<b>Free level.</b> A few real resources, open to anyone, plus your doorway challenge.","<b>Low-ticket paid.</b> Around $5 to $8 a month. Your steady rituals and the growing library.","<b>Premium paid.</b> Around $27 to $99 a month. Your deep intensives and live gatherings."] },
+  { id: 'paid', name: 'Paid', tag: 'No free level. A 7-day trial leads into two paid levels',
+    desc: "There's no permanently free room. Instead, your doorway challenge or a course leads people into a 7-day free trial of the level you're offering. They taste the real thing for a week, then it converts to paid. Everyone inside has chosen to be there, which changes the energy of the whole room.",
+    levels: ["<b>The doorway.</b> Promote a challenge, course, or event people actually want.","<b>7-day free trial.</b> They get a full week inside the level, free, then it converts.","<b>Low-ticket paid.</b> Around $5 to $8 a month. Your steady rituals and library.","<b>Premium paid.</b> Around $27 to $99 a month. Your deep intensives and live gatherings."] }
+];
+
+const PATHS = [
+  { id: 'healer', emoji: '🌙', name: 'Healer', tag: 'Energy, frequency, and hands-on modalities',
+    gifts: [
+      { id: 'reiki', name: 'Reiki Practitioner', blurb: 'Channels energy for balance and healing',
+        essence: "the felt experience of being energetically tended to", lean: "freemium",
+        challenge: { name: "The 7-Day Energy Reset", length: "7 days", teaser: "A week of small resets that leave them lighter",
+          what: "A short challenge people move through together, one short Reiki-infused practice a day for a week, each one settling their energy a little more. They feel the shift by mid-week, notice they're sleeping or breathing easier by day seven, and come out bonded to the group and hooked on how they feel. It's the doorway. You promote this, people feel your energy, and the ones who feel it want to stay.",
+          who: "People run-down and depleted who need a small, felt reason to believe energy work is real, and anyone curious about you who wants a taste before they commit. New members who need a reason to show up on day one.",
+          create: ["Map seven small daily practices that build toward one clear shift, like feeling lighter, calmer, or more grounded.","Keep each day short, a few minutes of audio or one practice, so people actually finish.","Set up a daily check-in space so people move through it together, not alone.","Run it live as a cohort the first time so the energy is high and you can feel what lands.","Invite everyone who reaches day seven into the level you want them in, while they're still glowing."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "Weekly Group Transmission", teaser: "The heartbeat your members show up for",
+              what: "A set weekly time where you send a live group distance Reiki transmission to everyone at once. Members drop in live or catch the recording. It becomes the steady pulse of the community, the thing people arrange their week around and the reason a quiet membership feels alive.",
+              who: "Your members who crave your energy on a rhythm, not just when they can afford a private session. The steady heartbeat that keeps the whole community showing up.",
+              create: ["Pick one weekly day and time you can hold without fail. The rhythm matters more than the hour.","Write a short script for how you open, send, and close. Keep it the same each week so it becomes a ritual people recognize.","Set your intention to send to the whole group as one field. Practice it once on your own first.","Run it live, then post the recording so members who missed it still feel held.","Announce next week's theme in the feed each time so anticipation builds."],
+              include: "Host it as a recurring live on your Skool calendar and let the replays gather in a classroom. This is your community's heartbeat, so protect the time and never skip it." },
+            { name: "The Money Frequency Series", teaser: "A paid mini-journey inside your world",
+              what: "A short, sellable series of Reiki transmissions and practices focused on one theme your members are hungry for, like clearing money blocks or opening to receiving. A few sessions with an arc and a finish line. Easy to say yes to because it isn't forever, and it brings new people into your community.",
+              who: "Members ready to go deeper on one specific thing, and new people who'll join your world for a focused journey before committing to the whole membership.",
+              create: ["Choose one theme your people keep raising. Money and receiving is a strong opener.","Design three or four sessions that build, clear, then open, then anchor.","Record or run them live, with a simple practice between each.","Price it as a standalone series anyone can buy, member or not.","Use it as a doorway, those who love it become full members."],
+              include: "Offer it as a paid series that lives in its own classroom, and run it live the first time inside the community so members feel they got the premiere." },
+            { name: "Seasonal Reiki Activations", teaser: "A reason to gather four times a year",
+              what: "A live group Reiki activation tied to each season or new moon. A ritual people anticipate and mark their calendars for. Sell each on its own or fold them into the membership as the seasonal high points that punctuate the year.",
+              who: "The members who crave ceremony and rhythm, who want their year marked by something sacred instead of just busy.",
+              create: ["Choose your rhythm, four seasons or twelve new moons. Start with what you can commit to.","Pick one theme for the first activation. Receiving is a strong opener.","Design a ninety-minute arc, an opening, a transmission, a quiet integration, a close. Write it down so it repeats.","Run the first one live and notice the energy and what people say after.","If it lands, make it a recurring high point of the membership."],
+              include: "Put each activation on the Skool calendar as a marquee event and build anticipation in the feed for a week before. Keep replays in a Ceremonies classroom." }
+          ],
+          artifacts: [
+            { name: "The Daily Energy Check-In", teaser: "The ritual that brings them back every morning",
+              what: "A simple daily ritual inside the community. Members check in with how their energy feels, choose a word or a number, and get a matched two-minute Reiki-infused practice for exactly that state. Over time they see their own pattern, and they feel the whole community checking in alongside them. It's the small daily habit that quietly makes your space the first place they open each day.",
+              who: "Every member who wants to feel tended to daily, not just at the weekly session. The ones who stay because something here is part of their morning now.",
+              create: ["Decide the handful of states members might check in as, like heavy, scattered, tender, open.","Record or write a two-minute practice for each state, in your voice.","Set up a simple daily check-in post or space where members share their word.","Match each shared state with the practice, so they always know their next two minutes.","Celebrate the streak. Notice out loud who's been showing up."],
+              include: "Run it as a daily thread or a pinned ritual in your Skool community. The shared check-in makes members feel each other's presence, which is what turns a content library into a place people belong." },
+            { name: "The Self-Healing Library", teaser: "Always something new to come back for",
+              what: "A growing shelf of short Reiki-infused audios and practices for the states real life throws at people, can't sleep, money panic, grief, overwhelm, before a hard conversation. Members reach for the one they need, when they need it. Because it keeps growing, there's always a reason to return, and members feel the library was built around their actual lives.",
+              who: "Members who want your energy on demand and a community that keeps giving. The ones who stay subscribed because the shelf is never finished.",
+              create: ["Start with the five states your people name most often.","Record one short practice for each, holding the Reiki intention while you speak.","Drop them into a single, beautifully organized classroom.","Let members request the next state, so the library grows from their real needs.","Announce each new addition in the feed so growth feels like a gift."],
+              include: "Build it as a dedicated classroom that visibly grows. Each new practice is a reason to post in the feed and a reason for members to come back in." },
+            { name: "The Collective Intention Grid", teaser: "Something they build together",
+              what: "A shared space where members place an intention each new moon, and you send Reiki to the whole grid of intentions as one field. Everyone can see the community's intentions gathered together, return to mark what's shifting, and feel held by the group. It turns private hope into a shared, visible, tended thing, which is exactly what makes people feel they belong somewhere.",
+              who: "Members who want to feel part of something larger than their own practice, who stay because their intention is being held by a real circle.",
+              create: ["Open a shared space each new moon for members to post one intention.","Send a group Reiki transmission to the whole field of intentions at once.","Invite members back through the month to witness and update what's moving.","Close each cycle by celebrating the shifts members noticed.","Begin again at the next new moon, so it becomes a rhythm they're part of."],
+              include: "Host it as a recurring new-moon ritual with a dedicated space in your community. The visible, shared grid is what makes members feel the room is full of people walking with them." },
+            { name: "The 7-Day Energy Reset", teaser: "A challenge that turns curious into committed",
+              what: "A short guided challenge members move through together, one small Reiki-infused practice a day for a week, each building on the last. They check in daily, feel the shift by day seven, and come out the other side bonded to the group and hooked on how they feel. It's the on-ramp that turns a new or curious member into a regular.",
+              who: "New members finding their feet and quiet ones who need a reason to engage. The challenge gives everyone a shared starting line and a quick, felt win.",
+              create: ["Map seven small daily practices that build toward one clear shift, like feeling lighter or more grounded.","Record or write each day simply, a few minutes is plenty.","Set up a daily check-in space so members move through it together, not alone.","Run it live as a cohort the first time so the energy is high.","Celebrate everyone who reaches day seven and invite them deeper."],
+              include: "Run it as a recurring challenge new members are funneled into when they join, with a daily thread for check-ins. Shared starting lines build fast bonds, which is what makes people stay past week one." },
+            { name: "The Energy Journey Map", teaser: "A self-paced path they follow at their own pace",
+              what: "A gentle self-paced path through the foundations of working with their own energy, a series of short lessons and practices members move through whenever they're ready. It gives newcomers somewhere to start and a sense of progress, so the community never feels like a confusing wall of content. People stay when they can feel themselves moving forward.",
+              who: "Members who want a clear path rather than a pile of resources, especially the newer ones who'd otherwise feel lost and drift away.",
+              create: ["Lay out the foundational steps you'd want any member to move through, in order.","Turn each into a short lesson with one practice to try.","Keep it self-paced so no one feels behind.","Add a simple marker of progress so they can feel themselves advancing.","Point new members here first so they always know where to begin."],
+              include: "Build it as a structured classroom that acts as the front door for new members. A clear path is what keeps a growing library from feeling overwhelming." }
+          ],
+          experiences: [
+            { name: "Group Healing Circle", teaser: "Everyone on the table at once",
+              what: "A live monthly gathering where you hold the energy for the whole group, then leave space for people to share what moved. The Reiki is the doorway. The belonging is what keeps them.",
+              who: "Members healing in isolation who ache for a room, even a virtual one, where they don't have to explain themselves.",
+              create: ["Set one date and keep the group small the first time so the intimacy is real.","Open with a short grounding so everyone arrives in their body.","Send energy to the whole circle for about fifteen minutes.","Leave space for three people to share what moved, no pressure on the rest.","Close clean and name the next date before you go."],
+              include: "Host it monthly on the Skool calendar as a signature gathering. Post a soft invitation a few days before, and let members share reflections in a thread afterward." },
+            { name: "Cacao and Reiki Evening", teaser: "Ceremony meets transmission",
+              what: "A slow, candlelit evening pairing a simple cacao ritual with a group Reiki transmission. Part ceremony, part rest, part the kind of gathering people screenshot and tell their friends about.",
+              who: "The members who joined for the magic, not just the strategy. The ones who light a candle before they open their laptop.",
+              create: ["Send a simple cacao recipe a few days ahead so everyone arrives ready.","Open with the cacao ritual to soften and open the heart.","Move into a Reiki transmission while hearts are open.","Hold about ninety minutes total, slow and candlelit.","Close gently and notice who asks when the next one is."],
+              include: "Run it as a seasonal ceremony, alternating with your connection calls so the rhythm always has something sacred coming. Keep it live-only the first few times." },
+            { name: "Energy Q&A and Hot Seat", teaser: "Where they bring the real stuff",
+              what: "A casual live where members bring what they're feeling in their body or their business, and you read the energy and offer a next step. Half coaching, half intuitive read, fully you.",
+              who: "The members who learn by watching you work on someone else's situation and quietly recognizing their own.",
+              create: ["Open one live with a single invitation. Bring me what's heavy right now.","Take three people, no more, so each gets real depth.","Read the energy, name what you notice, offer one clear next step.","Let the rest of the room watch and recognize themselves.","Save the recording, it becomes content for a week."],
+              include: "Hold it as a recurring live and let members drop questions in a thread beforehand so the shy ones still get served. Clip moments from the replay into the feed." }
+          ]
+        }
+      },
+      { id: 'energy-healer', name: 'Energy Healer', blurb: 'Clears and rebalances the energy field', soon: true },
+      { id: 'akashic', name: 'Akashic Reader', blurb: 'Reads the soul records for guidance', soon: true },
+      { id: 'sound-healer', name: 'Sound Healer', blurb: 'Heals through frequency and vibration', soon: true },
+      { id: 'crystal', name: 'Crystal Practitioner', blurb: 'Works with stones for healing and grids', soon: true },
+      { id: 'shamanic', name: 'Shamanic Guide', blurb: 'Journeys and soul retrieval work', soon: true }
+    ]
+  },
+  { id: 'coach', emoji: '🌿', name: 'Coach', tag: 'Transformation through guidance and strategy',
+    gifts: [
+      { id: 'storytelling', name: 'Storytelling Coach', blurb: 'Coaches people to tell their story powerfully on stage',
+        essence: "the courage and craft of being truly heard", lean: "paid",
+        challenge: { name: "The 7-Day Find Your Story Challenge", length: "7 days", teaser: "A week that turns lurkers into talkers",
+          what: "A short challenge people move through together, one small story prompt a day for a week, each one pulling a little more out of them. They share daily, cheer each other on, and by day seven they've surprised themselves with what they had to say. It's the doorway. You promote this, people feel how it is to be heard, and the ones who feel it want to stay.",
+          who: "People sitting on a story they've never shaped, and anyone curious about you who needs a low-stakes taste before they commit. New and quiet members who need a reason to start sharing on day one.",
+          create: ["Write seven daily prompts that build from easy to brave.","Keep each ask short, a few sentences shared in the space, so people actually finish.","Set up a daily check-in space so people move through it together, not alone.","Run it live as a cohort the first time so the energy carries and you can feel what lands.","Invite everyone who reaches day seven into the level you want them in, while the courage is fresh."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "The Signature Story Intensive", teaser: "From scattered to stage-ready",
+              what: "A short, focused program where you take someone from a messy pile of life events to one clear, powerful signature story they can tell on any stage. A few weeks, a clear arc, a finished talk at the end. The transformation is visible, which makes it easy to sell.",
+              who: "People who know they have a story worth telling and freeze when it's time to shape it. Coaches, speakers, and founders who need one strong talk that opens doors.",
+              create: ["Map the journey from raw material to finished talk in four or five sessions.","Build one worksheet for the first session that helps them dump every story moment onto the page.","Decide what finished looks like, a five to seven minute talk they can deliver from memory.","Run it once with a few people at a soft price and shape the final program from what they needed.","Record their before and after. The contrast is your best proof."],
+              include: "Run it as a cohort a few times a year inside your Skool community, with each round building toward a live showcase. Keep the worksheets in a classroom." },
+            { name: "Story Coaching Membership", teaser: "A stage to practice on, every month",
+              what: "A monthly membership where members bring a story in progress and get your coaching plus a safe room to practice it out loud. The ongoing reps are the product. Speaking is a muscle, and you give them the gym.",
+              who: "People who've taken a workshop and need somewhere to keep practicing so the skill actually sticks.",
+              create: ["Set a monthly live where a few members share a story and get warm, specific coaching.","Create one simple feedback frame the whole community uses, so notes build people up.","Open each month with a short teaching on one storytelling skill.","Record the teachings into a growing library members get when they join.","Keep it small enough that everyone gets a turn over time."],
+              include: "Host the monthly coaching live on your Skool calendar and let members post stories-in-progress in a dedicated thread for feedback between sessions." },
+            { name: "The Story Audit", teaser: "One story, made unforgettable",
+              what: "A focused one-to-one or recorded offer where someone brings a story or a talk and you reshape it with them, finding the real heart, cutting what dilutes it, sharpening the landing. High value, quick to deliver, easy yes.",
+              who: "Speakers with a talk that's almost there, and leaders prepping for one important moment.",
+              create: ["Have them send the story written out or recorded before you meet.","Listen for the true turning point. That becomes the spine.","Cut everything that doesn't serve that turn, however much they love it.","Sharpen the first line and the last line until both land like a drum.","Send them off with the reworked structure and one note on delivery."],
+              include: "Offer it as a premium add-on members can book, and run an occasional live where you audit one volunteer's story in front of the room so everyone learns." }
+          ],
+          artifacts: [
+            { name: "The Story Bank", teaser: "A living vault of their own moments",
+              what: "A growing personal space where members capture story moments as they happen, the small turning points, the lines they overhear, the memories that surface. Inside the community they build their own bank over time and see prompts that pull more out of them. When they need a story for a stage or a post, the well is already full.",
+              who: "Members who freeze at the blank page because they think they have nothing to say, when really they've never had a place to gather what they already carry.",
+              create: ["Create a simple personal space or thread where members log story moments any time.","Seed it with a weekly prompt that surfaces a memory, like a time you were sure you'd fail.","Encourage one-line captures, no pressure to write the whole thing.","Show members how to tag moments by feeling so they can find them later.","Celebrate the collectors, the ones quietly building a deep well."],
+              include: "Run it as an ongoing ritual with a weekly prompt in the feed. The bank grows inside your community, so the place they store their gold is the place they keep coming back to." },
+            { name: "The Story Structure Deck", teaser: "Pull a card, beat the blank page",
+              what: "A deck of story shapes and moves members pull from when they're stuck, the confession, the turn, the reframe, the callback. Each card gives a structure and a tiny example. Members use it solo, but inside the community they also riff off the same card together, sharing how each of them filled it.",
+              who: "Members who have the raw material but freeze on how to shape it, who need a starting move more than another pep talk.",
+              create: ["List the story structures and moves you teach most often.","Write each as a card, the name, what it does, one quick example.","Keep the deck tight and usable, not overwhelming.","Have it designed as clean digital cards members can flip through.","Use one card a week as a community prompt and let members share their take."],
+              include: "Keep the full deck in a classroom and run a card a week in the feed. When everyone shapes a mini story from the same card, the comments become the most alive part of your community." },
+            { name: "The Daily Telling", teaser: "A tiny stage, every single day",
+              what: "A daily micro-prompt where members tell one true thing in two or three sentences, right in the community. No stage, no pressure, just a rep. Over time they get braver, their voice gets clearer, and the feed fills with real human moments members come to read as much as to write.",
+              who: "Members building the muscle and the courage to be seen, who need low-stakes daily reps far more than another big workshop.",
+              create: ["Post one short prompt a day, like the smallest brave thing you did today.","Ask for two or three sentences only, so it stays easy to do.","Respond warmly to early sharers so the room feels safe.","Highlight a telling each week that moved people, with the member's blessing.","Keep it daily and consistent so it becomes a habit, not an event."],
+              include: "Run it as a daily feed ritual. The steady stream of small true stories is what makes members open your community first thing, and what makes them feel known there." },
+            { name: "The Signature Story Path", teaser: "A self-paced journey to their one great talk",
+              what: "A self-paced path that walks a member from scattered memories to one finished signature story, one step at a time, at whatever pace they can manage. Lessons, prompts, and a place to draft. New members get an obvious place to start, and the feeling of moving toward something real keeps them coming back until it's done.",
+              who: "Members who want to build one strong story on their own time, and newcomers who need a clear first journey instead of a wall of content.",
+              create: ["Break your story-building process into ordered steps, find it, shape it, cut it, land it.","Turn each step into a short lesson with one prompt.","Give them a space to draft as they go.","Keep it self-paced with a simple sense of progress.","Make it the first thing new members are pointed toward."],
+              include: "Build it as a structured classroom that serves as the front door for new members. A clear path to one finished talk gives people a reason to keep returning until they cross the line." },
+            { name: "The 5-Day Find Your Story Challenge", teaser: "A week that turns lurkers into talkers",
+              what: "A short challenge members move through together, one small story prompt a day for five days, each pulling a little more out of them. They share daily, cheer each other on, and by day five they've surprised themselves with what they had to say. It's the on-ramp that turns a quiet new member into someone who posts, shares, and stays.",
+              who: "New and quiet members who need a low-stakes reason to start sharing, and a shared starting line that bonds them to the group fast.",
+              create: ["Write five daily prompts that build from easy to brave.","Keep each ask short, a few sentences shared in the community.","Run it live as a cohort the first time so the energy carries.","Cheer every single share, especially the first-timers.","Invite everyone who finishes into your deeper coaching work."],
+              include: "Run it as a recurring challenge new members join when they arrive, with a daily check-in thread. The shared week of small brave shares is what flips a lurker into a regular." }
+          ],
+          experiences: [
+            { name: "The Story Showcase Night", teaser: "A real stage, a real audience",
+              what: "A live event where members take the stage, one at a time, to tell the story they've been working on while everyone witnesses. Part graduation, part performance, the kind of night that turns a practice into a milestone. You can even open it to ticketed guests.",
+              who: "Members who've shaped a story and need the real thing, an audience, a stage, a moment that counts.",
+              create: ["Set a date far enough out that members have time to prepare a polished story.","Give each speaker a clear time limit so the night moves and every story shines.","Run a rehearsal round beforehand so no one walks on cold.","Host the night warmly, introduce each speaker, hold the room, celebrate every turn.","Record it, with consent, so speakers keep their moment and you have proof of the magic."],
+              include: "Make it your community's signature live event, a few times a year, with members working toward it in the coaching membership. Open some nights to ticketed outside guests to bring new people into your world." },
+            { name: "Open Mic Practice Round", teaser: "Low stakes, real reps",
+              what: "A casual recurring live where members share a story in progress, rough is welcome, and get gentle reps in front of a friendly room. The opposite of the big showcase. This is where courage gets built quietly.",
+              who: "Members who aren't ready for the big stage yet and need a soft place to practice being seen before it counts.",
+              create: ["Set a low-pressure recurring time and name it clearly as practice, not performance.","Open by reminding everyone rough drafts are the whole point.","Let people share for a few minutes each, with light encouragement after.","Keep your feedback warm and sparse, this room is about reps, not notes.","Celebrate anyone who shows up to try, especially the first-timers."],
+              include: "Run it between showcase nights so members always have a place to practice. Post a simple sign-up thread each time so quieter members can claim a spot." },
+            { name: "Story Circle", teaser: "Where the real ones surface",
+              what: "An intimate gathering where members share a true story around a theme and the room simply witnesses. Less about performance, more about being heard. The trust built here is what makes people brave enough for the stage later.",
+              who: "Members who connect through depth and honesty, who heal by speaking what's true and being received without fixing.",
+              create: ["Choose one theme per circle, like the moment I stopped hiding.","Keep the group small so everyone can share and be heard.","Set one ground rule, we witness, we don't fix.","Hold the space yourself, sharing first to set the depth.","Close by naming what the room held together."],
+              include: "Run it as a tender, recurring gathering that feeds the bigger showcase work. Keep it live-only and unrecorded so people feel safe enough to tell the truth." }
+          ]
+        }
+      },
+      { id: 'purpose', name: 'Purpose Coach', blurb: 'Helps people find their why', soon: true },
+      { id: 'attachment', name: 'Attachment Coach', blurb: 'Heals attachment patterns', soon: true },
+      { id: 'confidence', name: 'Confidence Coach', blurb: 'Builds self-trust and presence', soon: true },
+      { id: 'relationship', name: 'Relationship Coach', blurb: 'Guides connection and repair', soon: true },
+      { id: 'somatic', name: 'Somatic Coach', blurb: 'Works through the body and nervous system', soon: true },
+      { id: 'career-pivot', name: 'Career-Pivot Coach', blurb: 'Guides the leap out of corporate', soon: true }
+    ]
+  },
+  { id: 'hypnotherapist', emoji: '🧠', name: 'Hypnotherapist', tag: 'Subconscious change and reprogramming',
+    gifts: [
+      { id: 'quantum-journeys', name: 'Quantum Journeys', blurb: 'Deep regression weaving Akashic, inner child, and guides', soon: true },
+      { id: 'anxiety', name: 'Anxiety', blurb: 'Calms the nervous system at the root', soon: true },
+      { id: 'money-blocks', name: 'Money Blocks', blurb: 'Rewires the relationship with money',
+        essence: "the moment an old money story loosens its grip and a calmer one takes its place", lean: "paid",
+        challenge: { name: "The 7-Day Money Unfreeze", length: "7 days", teaser: "A week to loosen the grip and prove change is possible",
+          what: "A short challenge people move through together, one small subconscious-shifting practice a day for a week, each one loosening a money block a little more. They feel something move mid-week, surprise themselves by day seven, and come out the other side believing change is actually possible for them. It's the doorway. You promote this, people feel your work, and the ones who feel it want to stay.",
+          who: "People stuck in the same money pattern who've never felt it budge, and anyone curious about your work who needs a small, safe taste before they commit. New members who need a reason to show up on day one.",
+          create: ["Map seven small daily practices that build, name the block, feel where it lives, loosen it, soften the charge, choose a new response, anchor it, then look at what shifted.","Keep each day short, a few minutes of audio or one practice, so people actually finish.","Set up a daily check-in space so people move through it together, not alone.","Run it live as a cohort the first time so the energy carries and you can feel what lands.","Invite everyone who reaches day seven into the level you want them in, while the shift is fresh."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "The Money Story Rewrite", teaser: "A few sessions to change what runs underneath",
+              what: "A short, focused program where you take someone from the money pattern they keep repeating to a new subconscious script that actually holds. A handful of hypnosis sessions with a clear arc, find the old story, loosen it, lay down the new one. The change is felt, not just understood, which is what makes people tell their friends.",
+              who: "People who've read every money book and still freeze when it's time to raise a price or check their bank balance. They know what to do and can't make themselves do it, because the block isn't in the thinking mind.",
+              create: ["Map a four to five session arc, uncover the root story, release the charge, install the new belief, anchor it, integrate it.","Record one short intake practice that helps them name the money moment they keep reliving.","Build each session around one shift, so progress is felt week to week.","Run it once with a few people at a soft price and shape the final program from what they actually needed.","Capture a before and after in their own words. The contrast is your proof."],
+              include: "Run it as a cohort a few times a year inside your Skool community, with the hypnosis recordings kept in a classroom members revisit. The first round live so members feel they got the premiere." },
+            { name: "The Receiving Reset", teaser: "A paid mini-journey into letting money in",
+              what: "A short, sellable series of hypnosis sessions and practices built around one theme your people are hungry for, the block on receiving. A few sessions with a beginning and an end. Easy to say yes to because it isn't forever, and it brings new people into your world before they commit to the whole membership.",
+              who: "Members ready to go deep on one specific knot, and new people who'll join your world for a focused journey first. The ones who can give endlessly and seize up the moment money flows toward them.",
+              create: ["Choose the one money theme your people raise most. Receiving is a strong opener.","Design three or four sessions that build, soften the guard, clear the old charge, open the channel, anchor the new normal.","Record or run them live, with one small practice between each.","Price it as a standalone series anyone can buy, member or not.","Use it as a doorway. The ones who feel the shift become full members."],
+              include: "Offer it as a paid series in its own classroom, run live the first time inside the community so members feel they were there for the premiere." },
+            { name: "The Single Session Unblock", teaser: "One session, one knot, real relief",
+              what: "A focused one-to-one hypnosis session aimed at a single money block someone can name, the fear of charging, the panic around spending, the freeze before a sales call. High value, quick to deliver, an easy yes because the promise is clear and small enough to believe.",
+              who: "People with one specific money moment that trips them every time, and members who want a taste of your deeper work before committing to a full program.",
+              create: ["Have them name the one money moment they want to change before you meet.","Open by finding where that moment lives in the body and when it first showed up.","Take them under and work the single block, no trying to fix everything at once.","Lay down one clear new response they can feel in the same situation.","Send them off with a short recording to listen back to so the new track sets."],
+              include: "Offer it as a premium one-to-one members can book, and run an occasional live where you work one volunteer's block in front of the room so everyone learns from watching." }
+          ],
+          artifacts: [
+            { name: "The Money Check-In", teaser: "The two minutes that reset their day",
+              what: "A simple daily ritual inside the community. Members name how money feels right now, tight, panicked, avoidant, open, and get a matched two-minute hypnosis-infused practice for exactly that state. Over time they watch their own pattern soften, and they feel the whole community checking in beside them. It's the small habit that quietly makes your space the first place they open when the money fear hits.",
+              who: "Members who want your work daily, not just in the big session. The ones whose money anxiety shows up at random moments and who need something to reach for right then.",
+              create: ["Name the handful of money states members live in, like tight, panicked, avoidant, hopeful.","Record a two-minute practice for each state, in your voice, calm and steadying.","Set up a daily check-in space where members drop their word.","Match each state with its practice so they always know their next two minutes.","Notice out loud who's been showing up, and name the shifts you see."],
+              include: "Run it as a daily thread or pinned ritual in your Skool community. The shared check-in lets members feel each other's presence, which turns a content library into a place people belong." },
+            { name: "The Money Block Library", teaser: "Always the exact track they need",
+              what: "A growing shelf of short hypnosis-infused audios for the money moments real life throws at people, can't look at the bank account, froze before sending the invoice, spiraling after a big spend, sick at the thought of raising a price. Members reach for the one they need, when they need it. Because it keeps growing, there's always a reason to return, and members feel it was built around their actual money life.",
+              who: "Members who want your voice on demand and a community that keeps giving. The ones who stay subscribed because the shelf is never finished.",
+              create: ["Start with the five money moments your people name most.","Record one short hypnosis track for each, calm and specific.","Drop them into one beautifully organized classroom.","Let members request the next track, so the library grows from their real moments.","Announce each addition in the feed so growth feels like a gift."],
+              include: "Build it as a dedicated classroom that visibly grows. Each new track is a reason to post in the feed and a reason for members to come back in." },
+            { name: "The Belief Tracker", teaser: "Watch the old story lose its grip",
+              what: "A shared space where members log one old money belief they're rewriting and check back to mark how true it still feels over time. They watch their own number drop, and they see the community doing the same work alongside them. It turns invisible inner change into something they can actually see moving, which is exactly what keeps people doing the work past the first week.",
+              who: "Members who lose faith because subconscious change is quiet and hard to see. The ones who need proof they're shifting so they don't quit before it lands.",
+              create: ["Have members name one old money belief and rate how true it feels, zero to ten.","Give them a simple space to log it and return to re-rate as they do the work.","Pair each re-rate with a short practice for that belief.","Show them how to see their own trend over weeks.","Celebrate the drops out loud, the moment a belief finally loses its hold."],
+              include: "Run it as an ongoing ritual with a monthly re-rate prompt in the feed. The visible trend is what makes the slow inner work feel real, so members stay long enough to feel it land." }
+          ],
+          experiences: [
+            { name: "The Group Money Clearing", teaser: "Everyone under at once",
+              what: "A live monthly session where you take the whole group into hypnosis around one money block at a time, then leave space for people to share what surfaced. The trance is the doorway. The relief of doing it together, in a room of people carrying the same weight, is what keeps them coming back.",
+              who: "Members carrying money shame in private who ache for a room where they don't have to pretend they've got it handled.",
+              create: ["Pick one money block per session, like the fear of charging what you're worth.","Open with a short grounding so everyone arrives in their body.","Take the group under for about twenty minutes on that single block.","Leave space for three people to share what surfaced, no pressure on the rest.","Close clean and name the next date and theme before you go."],
+              include: "Host it monthly on the Skool calendar as a signature gathering. Post a soft invitation a few days before, and let members share reflections in a thread afterward." },
+            { name: "The Money Mind Hot Seat", teaser: "Where they bring the real block",
+              what: "A casual live where members bring the money moment that keeps tripping them, and you work it with them on the spot, reading what's underneath and offering one clear shift. Half hypnotherapy, half intuitive read, fully you. The rest of the room watches and quietly recognizes their own block in someone else's.",
+              who: "Members who learn by watching you work on a real person and seeing their own pattern in it.",
+              create: ["Open one live with a single invitation. Bring me the money moment that keeps getting you.","Take three people, no more, so each gets real depth.","Find the root, name what you notice, offer one clear shift they can feel.","Let the rest of the room watch and recognize themselves.","Save the recording, it becomes content for a week."],
+              include: "Hold it as a recurring live and let members drop their money block in a thread beforehand so the quieter ones still get served. Clip moments from the replay into the feed." },
+            { name: "The Receiving Ceremony", teaser: "A slow night of letting it in",
+              what: "A slow, candlelit live pairing a simple opening ritual with a group hypnosis on receiving. Part ceremony, part deep rest, part the kind of gathering people screenshot and tell their friends about. They come for the calm and leave with the guard a little lower.",
+              who: "The members who joined for the magic, not just the strategy. The ones who give endlessly and have never once practiced letting money come toward them.",
+              create: ["Send a simple grounding ritual a few days ahead so everyone arrives ready.","Open with the ritual to soften and open the body.","Move into a hypnosis on receiving while the guard is down.","Hold about ninety minutes total, slow and candlelit.","Close gently and notice who asks when the next one is."],
+              include: "Run it as a seasonal ceremony, alternating with your other lives so the rhythm always has something sacred coming. Keep it live-only the first few times." }
+          ]
+        }
+      },
+      { id: 'inner-child', name: 'Inner Child', blurb: 'Heals early wounds and patterns', soon: true },
+      { id: 'past-life', name: 'Past-Life', blurb: 'Regression for present-day clarity', soon: true },
+      { id: 'habit-change', name: 'Habit Change', blurb: 'Breaks loops and builds new ones', soon: true },
+      { id: 'sleep', name: 'Sleep', blurb: 'Restores deep rest and calm', soon: true },
+      { id: 'pain-management', name: 'Pain Management', blurb: 'Eases chronic pain through the mind-body link', soon: true }
+    ]
+  },
+  { id: 'spiritual-entrepreneur', emoji: '🔮', name: 'Spiritual Entrepreneur', tag: 'Intuitive gifts that bridge the cosmic and practical',
+    gifts: [
+      { id: 'oracle', name: 'Oracle Card Reader', blurb: 'Pulls cards for insight and guidance', soon: true },
+      { id: 'human-design', name: 'Human Design Expert', blurb: 'Reads charts and decodes strategy', soon: true },
+      { id: 'astrologer', name: 'Astrologer', blurb: 'Maps the sky to the self', soon: true },
+      { id: 'manifestation', name: 'Manifestation Teacher', blurb: 'Teaches the art of receiving', soon: true },
+      { id: 'tarot', name: 'Tarot Reader', blurb: 'Reads the cards for depth and story', soon: true },
+      { id: 'intuitive', name: 'Intuitive Guide', blurb: 'Leads from a felt, knowing place', soon: true }
+    ]
+  }
+];
+
+const MAX_GIFTS = 3, MAX_PER_LANE = 2, STORE_KEY = 'ew_build_v4';
+let selectedGifts = [];
+const activePaths = new Set();
+let picks = { offers: [], artifacts: [], experiences: [] };
+let currentLane = 0, stage = 'start', todoState = null;
+let membership = null, challengePick = null;
+
+const STAGES = [
+  { id: 'start', label: 'Start Here', sub: 'How this works', num: '✦' },
+  { id: 'gifts', label: 'Your Gifts', sub: 'Pick up to three', num: '1' },
+  { id: 'build', label: 'Build Your Plan', sub: 'Offers, artifacts, experiences', num: '2' },
+  { id: 'plan', label: 'Your Plan', sub: 'Blueprint, prompts, checklist', num: '3' }
+];
+
+function findGift(pathId, giftId) { const p = PATHS.find(x => x.id === pathId); return p.gifts.find(g => g.id === giftId); }
+function itemKey(laneId, giftId, idx) { return laneId + '::' + giftId + '::' + idx; }
+function laneLabelFor(id) { if (id === 'challenge') return 'Challenge'; const l = LANE_META.find(x => x.id === id); return l ? l.label : ''; }
+function getItem(laneId, giftId, idx) { const g = selectedGifts.map(s => findGift(s.pathId, s.giftId)).find(x => x.id === giftId); if (laneId === 'challenge') return g.challenge; return g.lanes[laneId][idx]; }
+
+function burstConfetti(x, y) {
+  const colors = ['#E089BF','#C4A8E8','#9B6DC8','#F4B8DA','#C9A227'];
+  const N = 40;
+  const cv = document.createElement('canvas');
+  cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;';
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  document.body.appendChild(cv);
+  const ctx = cv.getContext('2d');
+  const parts = [];
+  for (let i = 0; i < N; i++) {
+    const a = (Math.PI * 2 * i) / N + Math.random();
+    const sp = 4 + Math.random() * 7;
+    parts.push({ x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 3, s: 5 + Math.random() * 6, c: colors[i % colors.length], rot: Math.random() * 6, vr: (Math.random()-0.5)*0.4, life: 1 });
+  }
+  let frame = 0;
+  function anim() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    let alive = false;
+    parts.forEach(p => {
+      p.vy += 0.22; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 0.012;
+      if (p.life > 0) { alive = true;
+        ctx.save(); ctx.globalAlpha = Math.max(0, p.life); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s * 0.6); ctx.restore();
+      }
+    });
+    frame++;
+    if (alive && frame < 160) requestAnimationFrame(anim); else cv.remove();
+  }
+  anim();
+}
+
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify({ selectedGifts: selectedGifts, picks: picks, todoState: todoState, membership: membership, challengePick: challengePick })); } catch(e) {} }
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (d.selectedGifts && d.selectedGifts.length) {
+      selectedGifts = d.selectedGifts; picks = d.picks || picks; todoState = d.todoState || null;
+      membership = d.membership || null; challengePick = d.challengePick || null;
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+const navItems = document.getElementById('navItems');
+function renderNav() {
+  const order = STAGES.map(s => s.id);
+  const ci = order.indexOf(stage);
+  navItems.innerHTML = STAGES.map((s, i) => {
+    const locked = (s.id === 'build' || s.id === 'plan') && selectedGifts.length === 0;
+    const cls = [s.id === stage ? 'active' : '', i < ci && !locked ? 'done' : '', locked ? 'locked' : ''].join(' ');
+    const mark = (i < ci && !locked) ? '✓' : s.num;
+    return '<li class="nav-item ' + cls + '" data-go="' + s.id + '"><span class="ni-num">' + mark + '</span><span class="ni-body"><span class="ni-label">' + s.label + '</span><span class="ni-sub">' + s.sub + '</span></span></li>';
+  }).join('');
+  navItems.querySelectorAll('.nav-item').forEach(it => {
+    it.onclick = () => { if (it.classList.contains('locked')) return; goToStage(it.dataset.go); closeMobileNav(); };
+  });
+}
+
+function goToStage(s) {
+  stage = s;
+  document.querySelectorAll('.stage').forEach(el => el.classList.remove('active'));
+  document.getElementById('stage-' + s).classList.add('active');
+  if (s === 'build') { renderMembershipBand(); renderLanes(); }
+  if (s === 'plan') renderPlan();
+  renderNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const nav = document.getElementById('nav'), navOverlay = document.getElementById('navOverlay');
+document.getElementById('burger').onclick = () => { nav.classList.add('open'); navOverlay.classList.add('show'); };
+function closeMobileNav() { nav.classList.remove('open'); navOverlay.classList.remove('show'); }
+navOverlay.onclick = closeMobileNav;
+document.getElementById('startBtn').onclick = () => goToStage('gifts');
+
+const filterRow = document.getElementById('filterRow');
+const giftGroups = document.getElementById('giftGroups');
+PATHS.forEach(p => {
+  const btn = document.createElement('button');
+  btn.className = 'path-btn'; btn.dataset.path = p.id;
+  btn.innerHTML = '<span class="pe">' + p.emoji + '</span> ' + p.name;
+  filterRow.appendChild(btn);
+});
+filterRow.onclick = e => {
+  const btn = e.target.closest('.path-btn'); if (!btn) return;
+  const id = btn.dataset.path;
+  if (activePaths.has(id)) { activePaths.delete(id); btn.classList.remove('active'); }
+  else { activePaths.add(id); btn.classList.add('active'); }
+  applyPathFilter();
+};
+PATHS.forEach(path => {
+  const group = document.createElement('div');
+  group.className = 'gift-group'; group.dataset.path = path.id;
+  group.innerHTML = '<div class="gift-group-head"><span class="gge">' + path.emoji + '</span><div><div class="ggn">' + path.name + '</div><div class="ggt">' + path.tag + '</div></div></div><div class="gift-grid">' +
+    path.gifts.map(g => '<div class="gift-card ' + (g.soon ? 'soon' : '') + '" data-gift="' + g.id + '" data-path="' + path.id + '"><div class="pick-check">✓</div><div class="gift-name">' + g.name + '</div><div class="gift-blurb">' + g.blurb + '</div>' + (g.soon ? '<span class="gift-soon-tag">Coming soon</span>' : '') + '</div>').join('') + '</div>';
+  giftGroups.appendChild(group);
+});
+function applyPathFilter() {
+  const showAll = activePaths.size === 0;
+  document.querySelectorAll('.gift-group').forEach(g => g.classList.toggle('hidden', !(showAll || activePaths.has(g.dataset.path))));
+}
+giftGroups.onclick = e => {
+  const card = e.target.closest('.gift-card');
+  if (!card || card.classList.contains('soon')) return;
+  const giftId = card.dataset.gift, pathId = card.dataset.path;
+  const i = selectedGifts.findIndex(s => s.giftId === giftId && s.pathId === pathId);
+  if (i >= 0) { selectedGifts.splice(i, 1); card.classList.remove('selected'); }
+  else { if (selectedGifts.length >= MAX_GIFTS) return; selectedGifts.push({ pathId: pathId, giftId: giftId }); card.classList.add('selected'); }
+  updateGiftLocks(); updateGiftsNext(); save(); renderNav();
+};
+function updateGiftLocks() {
+  const full = selectedGifts.length >= MAX_GIFTS;
+  document.querySelectorAll('.gift-card').forEach(card => {
+    if (card.classList.contains('soon')) return;
+    card.classList.toggle('locked', full && !card.classList.contains('selected'));
+  });
+}
+function updateGiftsNext() { document.getElementById('giftsNext').disabled = selectedGifts.length === 0; }
+document.getElementById('giftsNext').onclick = () => { currentLane = 0; goToStage('build'); };
+function restoreGiftSelections() {
+  selectedGifts.forEach(s => {
+    const card = document.querySelector('.gift-card[data-gift="' + s.giftId + '"][data-path="' + s.pathId + '"]');
+    if (card) card.classList.add('selected');
+  });
+  updateGiftLocks(); updateGiftsNext();
+}
+
+const laneProgress = document.getElementById('laneProgress');
+const laneBuilders = document.getElementById('laneBuilders');
+const laneCapNote = document.getElementById('laneCapNote');
+const membershipBand = document.getElementById('membershipBand');
+
+function renderMembershipBand() {
+  membershipBand.innerHTML = '<div class="mb-eyebrow"><span class="se-num">Step 1</span><span class="se-text">Choose how your membership works · then move to your challenge</span></div><div class="mb-cards">' +
+    MEMBERSHIP_MODELS.map(m => '<div class="mb-card ' + (membership === m.id ? 'selected' : '') + '" data-model="' + m.id + '"><div class="mb-card-check">✓</div><div class="mb-card-name">' + m.name + '</div><div class="mb-card-tag">' + m.tag + '</div><div class="mb-card-desc">' + m.desc + '</div><div class="mb-levels">' + m.levels.map(l => '<div class="mb-level"><span class="mb-level-dot"></span><span>' + l + '</span></div>').join('') + '</div></div>').join('') +
+    '</div>';
+  membershipBand.querySelectorAll('.mb-card').forEach(card => card.onclick = () => {
+    membership = card.dataset.model; save(); renderMembershipBand();
+  });
+}
+
+function renderCreate(item) {
+  if (Array.isArray(item.create))
+    return '<div class="deeper-block"><div class="deeper-label">How to create it</div><ol class="create-steps">' + item.create.map(s => '<li>' + s + '</li>').join('') + '</ol></div>';
+  if (item.start)
+    return '<div class="deeper-block"><div class="deeper-label">A simple way to start</div><div class="deeper-text start">' + item.start + '</div></div>';
+  return '';
+}
+
+function challengeOptions() {
+  return selectedGifts.map(s => { const g = findGift(s.pathId, s.giftId); return g.challenge ? { giftId: g.id, giftName: g.name, challenge: g.challenge } : null; }).filter(Boolean);
+}
+
+function renderLanes() {
+  const chOpts = challengeOptions();
+  const tabs = [{ id: 'challenge', label: 'Challenge', emoji: '🚪', count: challengePick ? 1 : 0, max: 1 }].concat(LANE_META.map(lm => ({ id: lm.id, label: lm.label, emoji: lm.emoji, count: picks[lm.id].length, max: MAX_PER_LANE })));
+  laneProgress.innerHTML = tabs.map((t, i) => { const full = t.count >= t.max; return '<div class="lane-chip ' + (i === currentLane ? 'active' : '') + ' ' + (t.count > 0 ? 'done' : '') + '" data-i="' + i + '">' + t.emoji + ' ' + t.label + ' <span class="lc ' + (full ? 'full' : '') + '">' + t.count + '/' + t.max + '</span></div>'; }).join('');
+  laneProgress.querySelectorAll('.lane-chip').forEach(c => c.onclick = () => { currentLane = +c.dataset.i; renderLanes(); laneProgress.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  const hint = document.getElementById('laneHint');
+  if (hint) hint.textContent = 'Tap each section above to explore it. ' + tabs[currentLane].label + ' is showing now.';
+
+  // Challenge lane (index 0)
+  let html = '<div class="lane-builder ' + (currentLane === 0 ? 'active' : '') + '" data-lane="challenge"><div class="step-eyebrow"><span class="se-num">Step 2</span><span class="se-text">Pick your one doorway challenge · then move to offers</span></div><p class="lane-desc">The challenge is your front door. The thing you promote to draw people in. Pick the one you\'ll lead with.</p><div class="challenge-note">In freemium, this runs free to anyone. In a paid model, it becomes your 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid.</div><div class="idea-list">' +
+    chOpts.map(p => {
+      const picked = challengePick && challengePick.giftId === p.giftId;
+      const it = p.challenge;
+      return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-challenge-gift="' + p.giftId + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + it.name + ' <span class="gift-tag">' + it.length + '</span></div><div class="idea-teaser">' + it.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + it.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + it.who + '</div></div>' + renderCreate(it) + (it.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + it.include + '</div></div>' : '') + '</div></div></div>';
+    }).join('') + '</div></div>';
+
+  // Standard lanes (index 1+)
+  html += LANE_META.map((lm, li) => {
+    const tabIndex = li + 1;
+    const nextWord = li < LANE_META.length - 1 ? 'then move to ' + LANE_META[li + 1].label.toLowerCase() : 'then see your plan';
+    const pooled = [];
+    selectedGifts.forEach(s => {
+      const gift = findGift(s.pathId, s.giftId);
+      (gift.lanes[lm.id] || []).forEach((item, idx) => pooled.push({ giftId: gift.id, giftName: gift.name, idx: idx, item: item }));
+    });
+    return '<div class="lane-builder ' + (tabIndex === currentLane ? 'active' : '') + '" data-lane="' + lm.id + '"><div class="step-eyebrow"><span class="se-num">Step ' + (tabIndex + 2) + '</span><span class="se-text">Select up to ' + MAX_PER_LANE + ' ' + lm.label.toLowerCase() + ' · ' + nextWord + '</span></div><p class="lane-desc">' + lm.desc + '</p><div class="idea-list">' +
+      pooled.map(p => {
+        const picked = picks[lm.id].some(x => x.giftId === p.giftId && x.idx === p.idx);
+        return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-gift="' + p.giftId + '" data-idx="' + p.idx + '" data-lane="' + lm.id + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + p.item.name + '</div><div class="idea-teaser">' + p.item.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + p.item.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + p.item.who + '</div></div>' + renderCreate(p.item) + (p.item.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + p.item.include + '</div></div>' : '') + '</div></div></div>';
+      }).join('') + '</div></div>';
+  }).join('');
+
+  laneBuilders.innerHTML = html;
+  laneCapNote.textContent = currentLane === 0 ? 'Pick one challenge to lead with.' : 'Add up to ' + MAX_PER_LANE + ' from this lane. Or none, if it\'s not yours yet.';
+  wireLanes();
+}
+
+function wireLanes() {
+  laneBuilders.querySelectorAll('.idea-main').forEach(m => m.onclick = () => m.closest('.idea-item').classList.toggle('open'));
+  laneBuilders.querySelectorAll('.idea-pick-btn').forEach(btn => btn.onclick = e => {
+    e.stopPropagation();
+    const item = btn.closest('.idea-item');
+    if (item.dataset.challengeGift) {
+      const gid = item.dataset.challengeGift;
+      if (challengePick && challengePick.giftId === gid) { challengePick = null; }
+      else { const g = selectedGifts.map(s => findGift(s.pathId, s.giftId)).find(x => x.id === gid); challengePick = { giftId: gid, giftName: g.name }; }
+      save(); renderLanes();
+      return;
+    }
+    const laneId = item.dataset.lane, giftId = item.dataset.gift, idx = +item.dataset.idx;
+    const ex = picks[laneId].findIndex(x => x.giftId === giftId && x.idx === idx);
+    if (ex >= 0) { picks[laneId].splice(ex, 1); item.classList.remove('picked'); btn.textContent = '+'; }
+    else {
+      if (picks[laneId].length >= MAX_PER_LANE) { laneCapNote.style.color = 'var(--pink-vibrant)'; setTimeout(() => laneCapNote.style.color = '', 700); return; }
+      const gift = selectedGifts.map(s => findGift(s.pathId, s.giftId)).find(g => g.id === giftId);
+      picks[laneId].push({ giftId: giftId, giftName: gift.name, idx: idx }); item.classList.add('picked'); btn.innerHTML = '<span class="ci">✓</span>';
+    }
+    const chip = laneProgress.querySelector('.lane-chip[data-i="' + (LANE_META.findIndex(l => l.id === laneId) + 1) + '"] .lc');
+    if (chip) { const n = picks[laneId].length; chip.textContent = n + '/' + MAX_PER_LANE; chip.classList.toggle('full', n >= MAX_PER_LANE); }
+    save();
+  });
+}
+
+document.getElementById('buildBack').onclick = () => goToStage('gifts');
+document.getElementById('buildNext').onclick = () => goToStage('plan');
+
+function allPicks() {
+  const arr = [];
+  if (challengePick) arr.push({ laneId: 'challenge', giftId: challengePick.giftId, giftName: challengePick.giftName, idx: 0 });
+  LANE_META.forEach(lm => picks[lm.id].forEach(p => arr.push({ laneId: lm.id, giftId: p.giftId, giftName: p.giftName, idx: p.idx })));
+  return arr;
+}
+
+function joinNames(arr) {
+  if (arr.length === 1) return arr[0];
+  if (arr.length === 2) return arr[0] + ' and ' + arr[1];
+  return arr.slice(0, -1).join(', ') + ', and ' + arr[arr.length - 1];
+}
+
+function buildCommunityParagraph() {
+  const gifts = selectedGifts.map(s => findGift(s.pathId, s.giftId));
+  const names = gifts.map(g => g.name);
+  const essences = gifts.map(g => g.essence).filter(Boolean);
+  const leans = gifts.map(g => g.lean).filter(Boolean);
+  let para = '';
+  if (names.length === 1) para = 'You\'re building a community around your work as a ' + names[0] + '. ';
+  else para = 'You\'re building something that brings together ' + joinNames(names) + '. That mix is your edge. Most people only offer one of these, and you get to weave them into one space. ';
+  if (essences.length) para += 'At its heart, this community is about ' + joinNames(essences) + '. ';
+  if (names.length > 1) para += 'Your members get to both receive and grow in the same place, the inner work and the practical building, side by side. That\'s rare, and it\'s exactly why people will stay. ';
+  else para += 'When you give that one thing consistently and well, people don\'t just join, they settle in and stay. ';
+  const paidCount = leans.filter(l => l === 'paid').length;
+  let priceTitle, priceBody;
+  if (leans.length === 0) { priceTitle = ''; priceBody = ''; }
+  else if (paidCount === 0) { priceTitle = 'Start freemium'; priceBody = 'Your gifts shine when people can feel them before they buy. Open a free tier where the daily rituals and the warmth live, then put your deeper transmissions, libraries, and live ceremonies behind a low monthly price. Let the magic do the selling.'; }
+  else if (paidCount === leans.length) { priceTitle = 'Go paid from the start'; priceBody = 'This is deep, transformational work, and pricing it like it matters is part of the medicine. A paid membership signals the commitment your members need to actually do the work. Keep a generous free taste outside the doors to draw people in, but the real container is worth paying for.'; }
+  else { priceTitle = 'Freemium, with a strong paid core'; priceBody = 'You\'ve got a beautiful balance. The felt, embodied parts of your work can live in a free tier that pulls people in and lets them belong. The deeper coaching and transformational pieces belong in a paid tier where the real commitment lives. Free to feel it, paid to be changed by it.'; }
+  return { para: para, priceTitle: priceTitle, priceBody: priceBody };
+}
+
+function buildClaudePrompt(laneId, giftId, giftName, item) {
+  const laneWord = laneId === 'challenge' ? 'free challenge that draws people into my community' : (laneId === 'offers' ? 'offer' : (laneId === 'artifacts' ? 'community tool' : 'live experience'));
+  const steps = Array.isArray(item.create) ? item.create.map((s, i) => (i + 1) + '. ' + s).join('\n') : (item.start || '');
+  return 'I\'m building a Skool membership community for my work as a ' + giftName + '. I want to create a ' + laneWord + ' called "' + item.name + '".\n\n' +
+    'Here\'s the idea: ' + item.what + '\n\n' +
+    'Who it\'s for: ' + item.who + '\n\n' +
+    'How I want to build it:\n' + steps + '\n\n' +
+    'How it fits in my community: ' + (item.include || 'It lives inside my Skool community as part of the member experience.') + '\n\n' +
+    'Please help me build this out fully. I\'d like:\n' +
+    '- A clear name and one-line description I can use on my Skool page\n' +
+    '- The full structure or outline, broken into the pieces I need to create\n' +
+    '- Any scripts, prompts, or copy I\'d need, written in a warm, grounded, down-to-earth voice with no hype and no jargon\n' +
+    '- A simple step-by-step plan to launch it inside my Skool community\n' +
+    '- One idea for how to invite my members to it in the community feed\n\n' +
+    'Ask me anything you need to know about my niche, my members, or my style before you begin.';
+}
+
+function planItemLine(laneId, p) {
+  const item = getItem(laneId, p.giftId, p.idx);
+  const laneLabel = laneLabelFor(laneId).toLowerCase().replace(/s$/, '');
+  return '<div class="ms-item"><span class="ms-item-dot"></span><div><span class="ms-item-name">' + item.name + '</span> <span class="ms-item-kind">' + laneLabel + '</span></div></div>';
+}
+
+function buildMembershipPlan() {
+  if (!membership) {
+    return '<div class="ms-empty"><div class="ms-empty-title">No membership chosen yet</div><p>Head back to Build your plan and pick how your membership works at the top. Then this lays out exactly how your offers, artifacts, experiences, and challenge sit across your levels.</p><button class="btn btn-primary" id="msGoBuild">← Choose my membership</button></div>';
+  }
+  const ch = challengePick ? findGift(selectedGifts.find(s => s.giftId === challengePick.giftId).pathId, challengePick.giftId).challenge : null;
+  const chName = ch ? ch.name : null;
+  const artifacts = picks.artifacts, offers = picks.offers, experiences = picks.experiences;
+
+  const suggestedBanner = '<div class="ms-suggested">This is a suggested shape, not a rule. It\'s a starting place to feel into. Move things where they feel right for you and your people. And remember, this is a <b>growing membership</b>. You\'re not filling every shelf today. You start with a little and add to it as the community tells you what it wants.</div>';
+
+  const lowBelongs = 'What belongs here over time: courses, a growing library of resources, do-it-yourself lessons, smaller challenges, and maybe one live event. The things people move through on their own time, at their own pace.';
+  const premBelongs = 'What belongs here over time: your deep live work. Intensives, ceremonies, hot seats, the high-touch transformation people show up in real time for. Everything in the lower level is included here too.';
+
+  let h = suggestedBanner;
+
+  if (membership === 'freemium') {
+    h += '<div class="ms-intro">You chose <b>freemium</b>. A free level that lets people feel your work, then two paid levels where the real transformation lives. Here\'s a way it could sit.</div>';
+
+    // Free level
+    h += '<div class="ms-tier ms-tier-free"><div class="ms-tier-head"><div class="ms-tier-name">Free level</div><div class="ms-tier-price">Open to anyone</div></div><div class="ms-tier-why">Where people land, feel you, and decide they want more. Keep it generous enough to matter, light enough that the depth still lives behind the doors. What belongs here: your doorway challenge and a taste of your everyday warmth, a free resource or two.</div>';
+    h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
+    if (chName) h += '<div class="ms-item ms-item-star"><span class="ms-item-dot"></span><div><span class="ms-item-name">' + chName + '</span> <span class="ms-item-kind">your doorway challenge</span></div></div>';
+    if (artifacts.length) h += planItemLine('artifacts', artifacts[0]);
+    if (!chName && !artifacts.length) h += '<div class="ms-none">Pick a challenge and an artifact in Build to fill this level.</div>';
+    h += '</div></div>';
+
+    // Low ticket
+    h += '<div class="ms-tier ms-tier-low"><div class="ms-tier-head"><div class="ms-tier-name">Low-ticket paid</div><div class="ms-tier-price">around $5 to $8 / month</div></div><div class="ms-tier-why">The easy yes. ' + lowBelongs + '</div>';
+    h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
+    if (artifacts.length > 1) artifacts.slice(1).forEach(p => h += planItemLine('artifacts', p));
+    else if (artifacts.length === 1) h += '<div class="ms-tip">Your one artifact sits free above. Add another in Build and it would live here.</div>';
+    else h += '<div class="ms-none">Add an artifact in Build and it would live here.</div>';
+    h += '</div></div>';
+
+    // Premium
+    h += '<div class="ms-tier ms-tier-prem"><div class="ms-tier-head"><div class="ms-tier-name">Premium paid</div><div class="ms-tier-price">around $27 to $99 / month</div></div><div class="ms-tier-why">The real container. ' + premBelongs + '</div>';
+    h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
+    if (offers.length || experiences.length) { offers.forEach(p => h += planItemLine('offers', p)); experiences.forEach(p => h += planItemLine('experiences', p)); }
+    else h += '<div class="ms-none">Add an offer or experience in Build and it would live here.</div>';
+    h += '</div></div>';
+  } else {
+    h += '<div class="ms-intro">You chose <b>paid</b>. No permanently free room. Your doorway leads into a 7-day free trial of the level, then it converts to paid. Here\'s a way it could sit.</div>';
+
+    // Doorway / trial
+    h += '<div class="ms-tier ms-tier-free"><div class="ms-tier-head"><div class="ms-tier-name">The doorway</div><div class="ms-tier-price">7-day free trial</div></div><div class="ms-tier-why">What you promote to draw people in. They join through this, get a full week inside the level free, then it converts to paid. A course or live event works as a doorway too. The challenge is just the most natural one.</div>';
+    h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
+    if (chName) h += '<div class="ms-item ms-item-star"><span class="ms-item-dot"></span><div><span class="ms-item-name">' + chName + '</span> <span class="ms-item-kind">your doorway challenge</span></div></div>';
+    else h += '<div class="ms-none">Pick a doorway challenge in Build to set your front door.</div>';
+    h += '</div></div>';
+
+    // Low ticket
+    h += '<div class="ms-tier ms-tier-low"><div class="ms-tier-head"><div class="ms-tier-name">Low-ticket paid</div><div class="ms-tier-price">around $5 to $8 / month</div></div><div class="ms-tier-why">Where most people land after the trial. ' + lowBelongs + '</div>';
+    h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
+    if (artifacts.length) artifacts.forEach(p => h += planItemLine('artifacts', p));
+    else h += '<div class="ms-none">Add an artifact in Build and it would live here.</div>';
+    h += '</div></div>';
+
+    // Premium
+    h += '<div class="ms-tier ms-tier-prem"><div class="ms-tier-head"><div class="ms-tier-name">Premium paid</div><div class="ms-tier-price">around $27 to $99 / month</div></div><div class="ms-tier-why">The deep end. ' + premBelongs + '</div>';
+    h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
+    if (offers.length || experiences.length) { offers.forEach(p => h += planItemLine('offers', p)); experiences.forEach(p => h += planItemLine('experiences', p)); }
+    else h += '<div class="ms-none">Add an offer or experience in Build and it would live here.</div>';
+    h += '</div></div>';
+  }
+  return h;
+}
+
+function renderPlan() {
+  const planWrap = document.getElementById('planWrap');
+  if (selectedGifts.length === 0 || allPicks().length === 0) {
+    planWrap.innerHTML = '<div class="plan-empty-state"><div class="pe-mark">Your plan is empty for now</div><p style="color:var(--ink-soft);margin-bottom:22px;">Head back and add a few ideas that light you up.</p><button class="btn btn-primary" id="goBuildEmpty">← Back to building</button></div>';
+    const gb = document.getElementById('goBuildEmpty'); if (gb) gb.onclick = () => goToStage('build');
+    return;
+  }
+  const giftNames = selectedGifts.map(s => findGift(s.pathId, s.giftId).name).join(' · ');
+  const multi = selectedGifts.length > 1;
+  const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  let community; try { community = buildCommunityParagraph(); } catch(e) { community = { para: '', priceTitle: '', priceBody: '' }; }
+
+  function itemDetail(laneId, p) {
+    const item = getItem(laneId, p.giftId, p.idx);
+    const createHtml = Array.isArray(item.create)
+      ? '<div class="pi-block"><div class="pi-label">How to create it</div><ol class="pi-steps">' + item.create.map(s => '<li>' + s + '</li>').join('') + '</ol></div>'
+      : (item.start ? '<div class="pi-block"><div class="pi-label">A simple way to start</div><div class="pi-text">' + item.start + '</div></div>' : '');
+    return '<div class="plan-item"><div class="plan-item-name">' + item.name + (multi ? ' <span class="pi-gift">' + p.giftName + '</span>' : '') + '</div><div class="pi-block"><div class="pi-label">What it is</div><div class="pi-text">' + item.what + '</div></div><div class="pi-block"><div class="pi-label">Who it\'s for</div><div class="pi-text">' + item.who + '</div></div>' + createHtml + (item.include ? '<div class="pi-block"><div class="pi-label">How to include it</div><div class="pi-text">' + item.include + '</div></div>' : '') + '</div>';
+  }
+
+  let html = '<div class="plan-card"><div class="plan-card-head"><div class="plan-card-kicker">' + giftNames + '</div><div class="plan-card-title">My Community Blueprint</div><div class="plan-card-date">Embody Wealth · ' + today + '</div></div><div class="plan-card-body">';
+
+  // Tabs
+  html += '<div class="plan-tabs">';
+  html += '<button class="plan-tab active" data-panel="overview">✦ Overview</button>';
+  html += '<button class="plan-tab" data-panel="membership">🚪 Your Membership</button>';
+  LANE_META.forEach(lm => {
+    html += '<button class="plan-tab" data-panel="' + lm.id + '">' + lm.emoji + ' ' + lm.label + ' <span class="pt-count">' + picks[lm.id].length + '</span></button>';
+  });
+  html += '<button class="plan-tab" data-panel="next">→ Your Next Steps</button>';
+  html += '</div>';
+
+  // Overview panel
+  html += '<div class="plan-panel active" data-panel="overview">';
+  if (community.para) {
+    html += '<div class="community-read"><div class="cr-label">✦ Your community, as it\'s taking shape</div><p class="cr-para">' + community.para + '</p>';
+    if (community.priceTitle) html += '<div class="cr-pricing"><div class="cr-pricing-title">' + community.priceTitle + '</div><div class="cr-pricing-body">' + community.priceBody + '</div></div>';
+    html += '</div>';
+  }
+  html += '<div class="plan-sign"><div class="plan-sign-text">Start with one. Build it well. Let it teach you the next.<br>I believe in you. To living our dreams. Aurailia <span class="mark">✦</span></div></div>';
+  html += '</div>';
+
+  // Membership panel (placement plan)
+  html += '<div class="plan-panel" data-panel="membership">' + buildMembershipPlan() + '</div>';
+
+  // One panel per lane
+  LANE_META.forEach(lm => {
+    html += '<div class="plan-panel" data-panel="' + lm.id + '"><div class="panel-lane-title"><span>' + lm.emoji + '</span> ' + lm.label + '</div>' +
+      (picks[lm.id].length === 0 ? '<div class="plan-empty">Nothing here yet, and that\'s okay. Come back when it calls you.</div>' : picks[lm.id].map(p => itemDetail(lm.id, p)).join('')) +
+      '</div>';
+  });
+
+  // Next steps panel (to-do)
+  html += '<div class="plan-panel" data-panel="next">' + renderTodoSection() + '</div>';
+
+  html += '</div></div>';
+  html += '<div class="plan-actions"><button class="btn btn-primary" id="dlBtn">⤓ Download my blueprint (PDF)</button><button class="btn btn-ghost" id="editBtn">← Edit my picks</button></div>';
+
+  planWrap.innerHTML = html;
+  wirePlanTabs();
+  const dl = document.getElementById('dlBtn'); if (dl) dl.onclick = () => window.print();
+  const ed = document.getElementById('editBtn'); if (ed) ed.onclick = () => goToStage('build');
+  const msb = document.getElementById('msGoBuild'); if (msb) msb.onclick = () => goToStage('build');
+  wireTodo();
+}
+
+function wirePlanTabs() {
+  const tabs = document.querySelectorAll('.plan-tab');
+  const panels = document.querySelectorAll('.plan-panel');
+  tabs.forEach(tab => tab.onclick = () => {
+    const target = tab.dataset.panel;
+    tabs.forEach(t => t.classList.toggle('active', t === tab));
+    panels.forEach(p => p.classList.toggle('active', p.dataset.panel === target));
+    document.querySelector('.plan-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+function renderTodoSection() {
+  const all = allPicks();
+  const doneKeys = todoState && todoState.everDone ? todoState.everDone : [];
+  if (!todoState || !todoState.chosen || todoState.chosen.length === 0) {
+    return '<div class="todo-section"><div class="todo-head"><div class="todo-head-title">Choose your next steps</div><div class="todo-head-sub">You don\'t build a community all at once. Pick up to three things to work on now. Anything you\'ve finished is crossed off. The rest will keep.</div></div><div class="todo-body"><div class="todo-instruction">Tap up to three to work on next.</div><div class="pick3-list" id="pick3List">' +
+      all.map(p => { const item = getItem(p.laneId, p.giftId, p.idx); const key = itemKey(p.laneId, p.giftId, p.idx); const isDone = doneKeys.indexOf(key) !== -1; return '<div class="pick3-item ' + (isDone ? 'is-done' : '') + '" data-key="' + key + '"><div class="p3-box">✓</div><div class="p3-body"><div class="p3-name">' + item.name + '</div><div class="p3-meta">' + laneLabelFor(p.laneId) + (selectedGifts.length > 1 ? ' · ' + p.giftName : '') + (isDone ? ' · done' : '') + '</div></div></div>'; }).join('') +
+      '</div><div class="pick3-confirm"><button class="btn btn-primary" id="confirmPick3" disabled>Start these →</button></div></div></div>';
+  }
+  const doneCount = todoState.chosen.filter(k => todoState.status[k] === 'done').length;
+  const activeCount = todoState.chosen.filter(k => todoState.status[k] !== 'later').length;
+  const allActiveDone = activeCount > 0 && doneCount === activeCount;
+  const remaining = all.filter(p => { const k = itemKey(p.laneId, p.giftId, p.idx); return todoState.chosen.indexOf(k) === -1 || todoState.status[k] === 'later'; });
+  const unbuiltRemaining = remaining.filter(p => doneKeys.indexOf(itemKey(p.laneId, p.giftId, p.idx)) === -1);
+  let h = '<div class="todo-section"><div class="todo-head"><div class="todo-head-title">What you\'re building now</div><div class="todo-head-sub">Build these, check them off, and choose your next when you\'re ready. One step at a time.</div><div class="todo-progress">' + doneCount + ' of ' + activeCount + ' done</div><button class="todo-change-btn" id="changeThree">⟳ Change my three</button></div><div class="todo-body"><div class="todo-list">';
+  h += todoState.chosen.map(key => {
+    const parts = key.split('::'); const laneId = parts[0], giftId = parts[1], idx = +parts[2];
+    const item = getItem(laneId, giftId, idx);
+    const giftName = findGift(selectedGifts.find(s => s.giftId === giftId).pathId, giftId).name;
+    const st = todoState.status[key] || 'open';
+    const prompt = buildClaudePrompt(laneId, giftId, giftName, item);
+    return '<div class="todo-item ' + (st === 'done' ? 'done' : '') + ' ' + (st === 'later' ? 'later' : '') + '" data-key="' + key + '"><div class="todo-item-head"><div class="todo-check" data-action="done">' + (st === 'done' ? '✓' : '') + '</div><div class="todo-info"><div class="todo-name">' + item.name + '</div><span class="todo-lane-tag">' + laneLabelFor(laneId) + (selectedGifts.length > 1 ? ' · ' + giftName : '') + (st === 'later' ? ' · set aside for next time' : '') + '</span></div><button class="todo-later-btn" data-action="later">' + (st === 'later' ? '↩ bring back' : 'Do later') + '</button></div><div class="prompt-wrap"><div class="prompt-toggle"><span class="pt-chev">▾</span> Get the Claude prompt to build this</div><div class="prompt-body"><div class="prompt-box">' + prompt.replace(/</g, '&lt;') + '</div><div class="prompt-copy"><button class="copy-btn" data-prompt="' + encodeURIComponent(prompt) + '">⧉ Copy prompt</button></div></div></div></div>';
+  }).join('');
+  h += '</div>';
+  if (allActiveDone) {
+    h += '<div class="wave-done-banner"><div class="wd-title">Look at you. Built and done.</div><div class="wd-text">' + (unbuiltRemaining.length > 0 ? 'Ready for the next? Your plan still has more waiting.' : 'That\'s everything in your plan. You built the whole thing. Time to let it grow.') + '</div>' + (unbuiltRemaining.length > 0 ? '<button class="btn btn-primary" id="nextWave">Choose my next steps →</button>' : '<button class="btn btn-ghost" id="addMore">Add more to my plan</button>') + '</div>';
+  }
+  h += '</div></div>';
+  return h;
+}
+
+function refreshTodo() {
+  const panel = document.querySelector('.plan-panel[data-panel="next"]');
+  if (!panel) { renderPlan(); return; }
+  panel.innerHTML = renderTodoSection();
+  wireTodo();
+}
+
+function wireTodo() {
+  const pick3List = document.getElementById('pick3List');
+  if (pick3List) {
+    const confirmBtn = document.getElementById('confirmPick3');
+    const chosen = new Set();
+    pick3List.querySelectorAll('.pick3-item').forEach(it => it.onclick = () => {
+      const key = it.dataset.key;
+      if (chosen.has(key)) { chosen.delete(key); it.classList.remove('chosen'); }
+      else { if (chosen.size >= 3) return; chosen.add(key); it.classList.add('chosen'); }
+      const full = chosen.size >= 3;
+      pick3List.querySelectorAll('.pick3-item').forEach(x => x.classList.toggle('dimmed', full && !x.classList.contains('chosen')));
+      confirmBtn.disabled = chosen.size === 0;
+    });
+    confirmBtn.onclick = () => {
+      const everDone = todoState && todoState.everDone ? todoState.everDone : [];
+      const wave = todoState && todoState.wave ? todoState.wave : 0;
+      todoState = { chosen: Array.from(chosen), status: {}, everDone: everDone, wave: wave + 1 };
+      Array.from(chosen).forEach(k => todoState.status[k] = everDone.indexOf(k) !== -1 ? 'done' : 'open');
+      save(); refreshTodo();
+    };
+    return;
+  }
+  document.querySelectorAll('.todo-item').forEach(item => {
+    const key = item.dataset.key;
+    item.querySelector('[data-action="done"]').onclick = (e) => {
+      const wasDone = todoState.status[key] === 'done';
+      todoState.status[key] = wasDone ? 'open' : 'done';
+      if (!todoState.everDone) todoState.everDone = [];
+      if (wasDone) { const ix = todoState.everDone.indexOf(key); if (ix !== -1) todoState.everDone.splice(ix, 1); }
+      else { if (todoState.everDone.indexOf(key) === -1) todoState.everDone.push(key); const r = e.currentTarget.getBoundingClientRect(); burstConfetti(r.left + r.width / 2, r.top + r.height / 2); }
+      save(); refreshTodo();
+    };
+    item.querySelector('[data-action="later"]').onclick = () => {
+      todoState.status[key] = todoState.status[key] === 'later' ? 'open' : 'later';
+      save(); refreshTodo();
+    };
+    const tog = item.querySelector('.prompt-toggle');
+    tog.onclick = () => tog.closest('.prompt-wrap').classList.toggle('open');
+    const copyBtn = item.querySelector('.copy-btn');
+    copyBtn.onclick = () => {
+      const text = decodeURIComponent(copyBtn.dataset.prompt);
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.classList.add('copied'); copyBtn.textContent = '✓ Copied';
+        setTimeout(() => { copyBtn.classList.remove('copied'); copyBtn.innerHTML = '⧉ Copy prompt'; }, 1800);
+      });
+    };
+  });
+  const nw = document.getElementById('nextWave');
+  if (nw) nw.onclick = () => {
+    const laterKeys = todoState.chosen.filter(k => todoState.status[k] === 'later');
+    todoState.chosen = []; todoState.status = {};
+    save(); refreshTodo();
+  };
+  const am = document.getElementById('addMore');
+  if (am) am.onclick = () => goToStage('build');
+  const ch = document.getElementById('changeThree');
+  if (ch) ch.onclick = () => {
+    todoState.chosen = []; todoState.status = {};
+    save(); refreshTodo();
+  };
+}
+
+const hadSaved = load();
+renderNav();
+applyPathFilter();
+if (hadSaved) { restoreGiftSelections(); goToStage('plan'); }
+else { updateGiftsNext(); }
+</script>
+</body>
+</html>
