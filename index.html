@@ -258,6 +258,19 @@
   .ms-tier-price { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--lilac-deep); background: rgba(255,255,255,0.7); padding: 4px 12px; border-radius: 100px; }
   .ms-tier-why { font-size: 14px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px; }
   .ms-item { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,255,255,0.7); border-radius: 12px; padding: 12px 15px; margin-bottom: 8px; }
+  .ms-item-clickable { display: block; padding: 0; cursor: pointer; overflow: hidden; transition: box-shadow 0.2s ease; }
+  .ms-item-clickable:hover { box-shadow: 0 4px 14px rgba(155,109,200,0.14); }
+  .ms-item-row { display: flex; align-items: center; gap: 10px; padding: 13px 16px; }
+  .ms-item-row .ms-item-dot { margin-top: 0; }
+  .ms-item-label { flex: 1; }
+  .ms-item-chev { color: var(--lilac-deep); font-size: 13px; transition: transform 0.3s ease; }
+  .ms-item-clickable.open .ms-item-chev { transform: rotate(180deg); }
+  .ms-item-deeper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .ms-item-clickable.open .ms-item-deeper { max-height: 1600px; }
+  .ms-deeper-inner { padding: 2px 16px 16px 16px; }
+  .ms-suggest-add { display: flex; gap: 11px; align-items: flex-start; background: linear-gradient(135deg, var(--pink-wash), var(--lilac-wash)); border: 1.5px dashed var(--pink-vibrant); border-radius: 12px; padding: 13px 16px; margin-top: 10px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+  .ms-suggest-add b { color: var(--ink); }
+  .ms-suggest-icon { color: var(--pink-vibrant); font-size: 14px; margin-top: 1px; }
   .ms-item:last-child { margin-bottom: 0; }
   .ms-item-star { border: 1.5px solid var(--pink-vibrant); background: #fff; }
   .ms-item-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pink-vibrant); flex-shrink: 0; margin-top: 7px; }
@@ -886,7 +899,7 @@ function renderLanes() {
     chOpts.map(p => {
       const picked = challengePick && challengePick.giftId === p.giftId;
       const it = p.challenge;
-      return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-challenge-gift="' + p.giftId + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + it.name + ' <span class="gift-tag">' + it.length + '</span></div><div class="idea-teaser">' + it.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + it.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + it.who + '</div></div>' + renderCreate(it) + (it.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + it.include + '</div></div>' : '') + '</div></div></div>';
+      return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-challenge-gift="' + p.giftId + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + it.name + ' <span class="gift-tag">' + it.length + '</span></div><div class="idea-teaser">' + it.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + it.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + it.who + '</div></div>' + (it.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + it.include + '</div></div>' : '') + '</div></div></div>';
     }).join('') + '</div></div>';
 
   // Standard lanes (index 1+)
@@ -901,7 +914,7 @@ function renderLanes() {
     return '<div class="lane-builder ' + (tabIndex === currentLane ? 'active' : '') + '" data-lane="' + lm.id + '"><div class="step-eyebrow"><span class="se-num">Step ' + (tabIndex + 2) + '</span><span class="se-text">Select up to ' + maxFor(lm.id) + ' ' + lm.label.toLowerCase() + ' · ' + nextWord + '</span></div><p class="lane-desc">' + lm.desc + '</p><div class="idea-list">' +
       pooled.map(p => {
         const picked = picks[lm.id].some(x => x.giftId === p.giftId && x.idx === p.idx);
-        return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-gift="' + p.giftId + '" data-idx="' + p.idx + '" data-lane="' + lm.id + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + p.item.name + '</div><div class="idea-teaser">' + p.item.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + p.item.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + p.item.who + '</div></div>' + renderCreate(p.item) + (p.item.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + p.item.include + '</div></div>' : '') + '</div></div></div>';
+        return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-gift="' + p.giftId + '" data-idx="' + p.idx + '" data-lane="' + lm.id + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + p.item.name + '</div><div class="idea-teaser">' + p.item.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + p.item.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + p.item.who + '</div></div>' + (p.item.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + p.item.include + '</div></div>' : '') + '</div></div></div>';
       }).join('') + '</div></div>';
   }).join('');
 
@@ -989,10 +1002,16 @@ function buildClaudePrompt(laneId, giftId, giftName, item) {
     'Ask me anything you need to know about my niche, my members, or my style before you begin.';
 }
 
-function planItemLine(laneId, p) {
+function planItemLine(laneId, p, kindOverride) {
   const item = getItem(laneId, p.giftId, p.idx);
-  const laneLabel = laneLabelFor(laneId).toLowerCase().replace(/s$/, '');
-  return '<div class="ms-item"><span class="ms-item-dot"></span><div><span class="ms-item-name">' + item.name + '</span> <span class="ms-item-kind">' + laneLabel + '</span></div></div>';
+  const laneLabel = kindOverride || laneLabelFor(laneId).toLowerCase().replace(/s$/, '');
+  const deeper = '<div class="ms-item-deeper"><div class="ms-deeper-inner">' +
+    '<div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + item.what + '</div></div>' +
+    '<div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + item.who + '</div></div>' +
+    renderCreate(item) +
+    (item.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + item.include + '</div></div>' : '') +
+    '</div></div>';
+  return '<div class="ms-item ms-item-clickable"><div class="ms-item-row"><span class="ms-item-dot"></span><div class="ms-item-label"><span class="ms-item-name">' + item.name + '</span> <span class="ms-item-kind">' + laneLabel + '</span></div><span class="ms-item-chev">▾</span></div>' + deeper + '</div>';
 }
 
 function buildMembershipPlan() {
@@ -1007,6 +1026,7 @@ function buildMembershipPlan() {
 
   const lowBelongs = 'What belongs here over time: courses, a growing library of resources, do-it-yourself lessons, smaller challenges, and maybe one live event. The things people move through on their own time, at their own pace.';
   const premBelongs = 'What belongs here over time: your deep live work. Intensives, ceremonies, hot seats, the high-touch transformation people show up in real time for. Everything in the lower level is included here too.';
+  const courseSuggest = '<div class="ms-suggest-add"><span class="ms-suggest-icon">✦</span><div><b>Add a course here.</b> A self-paced course is the heart of a low-ticket level. Take one of your offers and turn it into lessons people move through on their own time. It gives this level real weight without asking you to show up live.</div></div>';
 
   let h = suggestedBanner;
 
@@ -1016,7 +1036,7 @@ function buildMembershipPlan() {
     // Free level
     h += '<div class="ms-tier ms-tier-free"><div class="ms-tier-head"><div class="ms-tier-name">Free level</div><div class="ms-tier-price">Open to anyone</div></div><div class="ms-tier-why">Where people land, feel you, and decide they want more. Keep it generous enough to matter, light enough that the depth still lives behind the doors. What belongs here: your doorway challenge and a taste of your everyday warmth, a free resource or two.</div>';
     h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
-    if (chName) h += '<div class="ms-item ms-item-star"><span class="ms-item-dot"></span><div><span class="ms-item-name">' + chName + '</span> <span class="ms-item-kind">your doorway challenge</span></div></div>';
+    if (chName) h += planItemLine('challenge', { giftId: challengePick.giftId, idx: 0 }, 'your doorway challenge');
     if (artifacts.length) h += planItemLine('artifacts', artifacts[0]);
     if (!chName && !artifacts.length) h += '<div class="ms-none">Pick a challenge and an artifact in Build to fill this level.</div>';
     h += '</div></div>';
@@ -1024,16 +1044,18 @@ function buildMembershipPlan() {
     // Low ticket
     h += '<div class="ms-tier ms-tier-low"><div class="ms-tier-head"><div class="ms-tier-name">Low-ticket paid</div><div class="ms-tier-price">around $5 to $8 / month</div></div><div class="ms-tier-why">The easy yes. ' + lowBelongs + '</div>';
     h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
+    if (offers.length) h += planItemLine('offers', offers[0], 'offer · runs well as a course');
     if (artifacts.length > 1) artifacts.slice(1).forEach(p => h += planItemLine('artifacts', p));
     else if (artifacts.length === 1) h += '<div class="ms-tip">Your one artifact sits free above. Add another in Build and it would live here.</div>';
-    else h += '<div class="ms-none">Add an artifact in Build and it would live here.</div>';
-    h += '</div></div>';
+    if (!offers.length && artifacts.length <= 1) h += '<div class="ms-none">Add an offer or another artifact in Build and it would live here.</div>';
+    h += '</div>' + courseSuggest + '</div>';
 
     // Premium
     h += '<div class="ms-tier ms-tier-prem"><div class="ms-tier-head"><div class="ms-tier-name">Premium paid</div><div class="ms-tier-price">around $27 to $99 / month</div></div><div class="ms-tier-why">The real container. ' + premBelongs + '</div>';
     h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
-    if (offers.length || experiences.length) { offers.forEach(p => h += planItemLine('offers', p)); experiences.forEach(p => h += planItemLine('experiences', p)); }
-    else h += '<div class="ms-none">Add an offer or experience in Build and it would live here.</div>';
+    const fPrem = offers.slice(1);
+    if (fPrem.length || experiences.length) { fPrem.forEach(p => h += planItemLine('offers', p)); experiences.forEach(p => h += planItemLine('experiences', p)); }
+    else h += '<div class="ms-none">Add another offer or an experience in Build and it would live here.</div>';
     h += '</div></div>';
   } else {
     h += '<div class="ms-intro">You chose <b>paid</b>. No permanently free room. Your doorway leads into a 7-day free trial of the level, then it converts to paid. Here\'s a way it could sit.</div>';
@@ -1041,22 +1063,24 @@ function buildMembershipPlan() {
     // Doorway / trial
     h += '<div class="ms-tier ms-tier-free"><div class="ms-tier-head"><div class="ms-tier-name">The doorway</div><div class="ms-tier-price">7-day free trial</div></div><div class="ms-tier-why">What you promote to draw people in. They join through this, get a full week inside the level free, then it converts to paid. A course or live event works as a doorway too. The challenge is just the most natural one.</div>';
     h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
-    if (chName) h += '<div class="ms-item ms-item-star"><span class="ms-item-dot"></span><div><span class="ms-item-name">' + chName + '</span> <span class="ms-item-kind">your doorway challenge</span></div></div>';
+    if (chName) h += planItemLine('challenge', { giftId: challengePick.giftId, idx: 0 }, 'your doorway challenge');
     else h += '<div class="ms-none">Pick a doorway challenge in Build to set your front door.</div>';
     h += '</div></div>';
 
     // Low ticket
     h += '<div class="ms-tier ms-tier-low"><div class="ms-tier-head"><div class="ms-tier-name">Low-ticket paid</div><div class="ms-tier-price">around $5 to $8 / month</div></div><div class="ms-tier-why">Where most people land after the trial. ' + lowBelongs + '</div>';
     h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
+    if (offers.length) h += planItemLine('offers', offers[0], 'offer · runs well as a course');
     if (artifacts.length) artifacts.forEach(p => h += planItemLine('artifacts', p));
-    else h += '<div class="ms-none">Add an artifact in Build and it would live here.</div>';
-    h += '</div></div>';
+    if (!offers.length && !artifacts.length) h += '<div class="ms-none">Add an offer or artifact in Build and it would live here.</div>';
+    h += '</div>' + courseSuggest + '</div>';
 
     // Premium
     h += '<div class="ms-tier ms-tier-prem"><div class="ms-tier-head"><div class="ms-tier-name">Premium paid</div><div class="ms-tier-price">around $27 to $99 / month</div></div><div class="ms-tier-why">The deep end. ' + premBelongs + '</div>';
     h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
-    if (offers.length || experiences.length) { offers.forEach(p => h += planItemLine('offers', p)); experiences.forEach(p => h += planItemLine('experiences', p)); }
-    else h += '<div class="ms-none">Add an offer or experience in Build and it would live here.</div>';
+    const pPrem = offers.slice(1);
+    if (pPrem.length || experiences.length) { pPrem.forEach(p => h += planItemLine('offers', p)); experiences.forEach(p => h += planItemLine('experiences', p)); }
+    else h += '<div class="ms-none">Add another offer or an experience in Build and it would live here.</div>';
     h += '</div></div>';
   }
   return h;
@@ -1088,9 +1112,6 @@ function renderPlan() {
   html += '<div class="plan-tabs">';
   html += '<button class="plan-tab active" data-panel="overview">✦ Overview</button>';
   html += '<button class="plan-tab" data-panel="membership">🚪 Your Membership</button>';
-  LANE_META.forEach(lm => {
-    html += '<button class="plan-tab" data-panel="' + lm.id + '">' + lm.emoji + ' ' + lm.label + ' <span class="pt-count">' + picks[lm.id].length + '</span></button>';
-  });
   html += '<button class="plan-tab" data-panel="next">→ Your Next Steps</button>';
   html += '</div>';
 
@@ -1104,15 +1125,8 @@ function renderPlan() {
   html += '<div class="plan-sign"><div class="plan-sign-text">Start with one. Build it well. Let it teach you the next.<br>I believe in you. To living our dreams. Aurailia <span class="mark">✦</span></div></div>';
   html += '</div>';
 
-  // Membership panel (placement plan)
+  // Membership panel (placement plan, items expandable)
   html += '<div class="plan-panel" data-panel="membership">' + buildMembershipPlan() + '</div>';
-
-  // One panel per lane
-  LANE_META.forEach(lm => {
-    html += '<div class="plan-panel" data-panel="' + lm.id + '"><div class="panel-lane-title"><span>' + lm.emoji + '</span> ' + lm.label + '</div>' +
-      (picks[lm.id].length === 0 ? '<div class="plan-empty">Nothing here yet, and that\'s okay. Come back when it calls you.</div>' : picks[lm.id].map(p => itemDetail(lm.id, p)).join('')) +
-      '</div>';
-  });
 
   // Next steps panel (to-do)
   html += '<div class="plan-panel" data-panel="next">' + renderTodoSection() + '</div>';
@@ -1122,6 +1136,7 @@ function renderPlan() {
 
   planWrap.innerHTML = html;
   wirePlanTabs();
+  document.querySelectorAll('.ms-item-clickable').forEach(it => it.querySelector('.ms-item-row').onclick = () => it.classList.toggle('open'));
   const dl = document.getElementById('dlBtn'); if (dl) dl.onclick = () => window.print();
   const ed = document.getElementById('editBtn'); if (ed) ed.onclick = () => goToStage('build');
   const msb = document.getElementById('msGoBuild'); if (msb) msb.onclick = () => goToStage('build');
