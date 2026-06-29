@@ -691,7 +691,9 @@ const PATHS = [
   }
 ];
 
-const MAX_GIFTS = 3, MAX_PER_LANE = 2, STORE_KEY = 'ew_build_v4';
+const MAX_GIFTS = 3, MAX_PER_LANE = 2, STORE_KEY = 'ew_build_v5';
+const LANE_MAX = { offers: 2, artifacts: 3, experiences: 2 };
+function maxFor(laneId) { return LANE_MAX[laneId] || MAX_PER_LANE; }
 let selectedGifts = [];
 const activePaths = new Set();
 let picks = { offers: [], artifacts: [], experiences: [] };
@@ -818,7 +820,13 @@ giftGroups.onclick = e => {
   if (!card || card.classList.contains('soon')) return;
   const giftId = card.dataset.gift, pathId = card.dataset.path;
   const i = selectedGifts.findIndex(s => s.giftId === giftId && s.pathId === pathId);
-  if (i >= 0) { selectedGifts.splice(i, 1); card.classList.remove('selected'); }
+  if (i >= 0) {
+    selectedGifts.splice(i, 1); card.classList.remove('selected');
+    // drop any picks tied to this gift so stale items don't linger
+    ['offers','artifacts','experiences'].forEach(lane => { picks[lane] = picks[lane].filter(p => p.giftId !== giftId); });
+    if (challengePick && challengePick.giftId === giftId) challengePick = null;
+    if (todoState) { todoState.chosen = (todoState.chosen || []).filter(k => k.indexOf('::' + giftId + '::') === -1); }
+  }
   else { if (selectedGifts.length >= MAX_GIFTS) return; selectedGifts.push({ pathId: pathId, giftId: giftId }); card.classList.add('selected'); }
   updateGiftLocks(); updateGiftsNext(); save(); renderNav();
 };
@@ -867,7 +875,7 @@ function challengeOptions() {
 
 function renderLanes() {
   const chOpts = challengeOptions();
-  const tabs = [{ id: 'challenge', label: 'Challenge', emoji: '🚪', count: challengePick ? 1 : 0, max: 1 }].concat(LANE_META.map(lm => ({ id: lm.id, label: lm.label, emoji: lm.emoji, count: picks[lm.id].length, max: MAX_PER_LANE })));
+  const tabs = [{ id: 'challenge', label: 'Challenge', emoji: '🚪', count: challengePick ? 1 : 0, max: 1 }].concat(LANE_META.map(lm => ({ id: lm.id, label: lm.label, emoji: lm.emoji, count: picks[lm.id].length, max: maxFor(lm.id) })));
   laneProgress.innerHTML = tabs.map((t, i) => { const full = t.count >= t.max; return '<div class="lane-chip ' + (i === currentLane ? 'active' : '') + ' ' + (t.count > 0 ? 'done' : '') + '" data-i="' + i + '">' + t.emoji + ' ' + t.label + ' <span class="lc ' + (full ? 'full' : '') + '">' + t.count + '/' + t.max + '</span></div>'; }).join('');
   laneProgress.querySelectorAll('.lane-chip').forEach(c => c.onclick = () => { currentLane = +c.dataset.i; renderLanes(); laneProgress.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   const hint = document.getElementById('laneHint');
@@ -890,7 +898,7 @@ function renderLanes() {
       const gift = findGift(s.pathId, s.giftId);
       (gift.lanes[lm.id] || []).forEach((item, idx) => pooled.push({ giftId: gift.id, giftName: gift.name, idx: idx, item: item }));
     });
-    return '<div class="lane-builder ' + (tabIndex === currentLane ? 'active' : '') + '" data-lane="' + lm.id + '"><div class="step-eyebrow"><span class="se-num">Step ' + (tabIndex + 2) + '</span><span class="se-text">Select up to ' + MAX_PER_LANE + ' ' + lm.label.toLowerCase() + ' · ' + nextWord + '</span></div><p class="lane-desc">' + lm.desc + '</p><div class="idea-list">' +
+    return '<div class="lane-builder ' + (tabIndex === currentLane ? 'active' : '') + '" data-lane="' + lm.id + '"><div class="step-eyebrow"><span class="se-num">Step ' + (tabIndex + 2) + '</span><span class="se-text">Select up to ' + maxFor(lm.id) + ' ' + lm.label.toLowerCase() + ' · ' + nextWord + '</span></div><p class="lane-desc">' + lm.desc + '</p><div class="idea-list">' +
       pooled.map(p => {
         const picked = picks[lm.id].some(x => x.giftId === p.giftId && x.idx === p.idx);
         return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-gift="' + p.giftId + '" data-idx="' + p.idx + '" data-lane="' + lm.id + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + p.item.name + '</div><div class="idea-teaser">' + p.item.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + p.item.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + p.item.who + '</div></div>' + renderCreate(p.item) + (p.item.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + p.item.include + '</div></div>' : '') + '</div></div></div>';
@@ -898,7 +906,7 @@ function renderLanes() {
   }).join('');
 
   laneBuilders.innerHTML = html;
-  laneCapNote.textContent = currentLane === 0 ? 'Pick one challenge to lead with.' : 'Add up to ' + MAX_PER_LANE + ' from this lane. Or none, if it\'s not yours yet.';
+  laneCapNote.textContent = currentLane === 0 ? 'Pick one challenge to lead with.' : 'Add up to ' + maxFor(LANE_META[currentLane - 1].id) + ' from this lane. Or none, if it\'s not yours yet.';
   wireLanes();
 }
 
@@ -918,12 +926,12 @@ function wireLanes() {
     const ex = picks[laneId].findIndex(x => x.giftId === giftId && x.idx === idx);
     if (ex >= 0) { picks[laneId].splice(ex, 1); item.classList.remove('picked'); btn.textContent = '+'; }
     else {
-      if (picks[laneId].length >= MAX_PER_LANE) { laneCapNote.style.color = 'var(--pink-vibrant)'; setTimeout(() => laneCapNote.style.color = '', 700); return; }
+      if (picks[laneId].length >= maxFor(laneId)) { laneCapNote.style.color = 'var(--pink-vibrant)'; setTimeout(() => laneCapNote.style.color = '', 700); return; }
       const gift = selectedGifts.map(s => findGift(s.pathId, s.giftId)).find(g => g.id === giftId);
       picks[laneId].push({ giftId: giftId, giftName: gift.name, idx: idx }); item.classList.add('picked'); btn.innerHTML = '<span class="ci">✓</span>';
     }
     const chip = laneProgress.querySelector('.lane-chip[data-i="' + (LANE_META.findIndex(l => l.id === laneId) + 1) + '"] .lc');
-    if (chip) { const n = picks[laneId].length; chip.textContent = n + '/' + MAX_PER_LANE; chip.classList.toggle('full', n >= MAX_PER_LANE); }
+    if (chip) { const n = picks[laneId].length; const mx = maxFor(laneId); chip.textContent = n + '/' + mx; chip.classList.toggle('full', n >= mx); }
     save();
   });
 }
