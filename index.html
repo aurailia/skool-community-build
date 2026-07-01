@@ -156,16 +156,31 @@
   .mb-level { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; color: var(--ink); }
   .mb-level-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pink-vibrant); flex-shrink: 0; transform: translateY(-1px); }
   .mb-level b { font-weight: 700; }
-  .lane-progress-hint { font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; font-style: italic; font-family: var(--serif); }
+  .lane-progress-hint { display: none; }
   .lane-builder .challenge-note { background: var(--lilac-wash); border-radius: 12px; padding: 12px 16px; font-size: 13px; color: var(--ink-soft); line-height: 1.5; margin-bottom: 16px; }
-  .lane-chip { padding: 11px 20px; border-radius: 14px; border: 1.5px solid rgba(155,109,200,0.28); background: #fff; font-size: 14px; font-weight: 600; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(155,109,200,0.06); }
-  .lane-chip:hover { border-color: var(--lilac-mid); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(155,109,200,0.13); }
-  .lane-chip.active { background: var(--grad-deep); color: #fff; border-color: transparent; box-shadow: 0 6px 16px var(--lilac-glow); }
-  .lane-chip.done { border-color: var(--pink-soft); }
-  .lane-chip.done:not(.active) { background: var(--pink-wash); color: var(--lilac-deep); }
-  .lane-chip .lc { font-family: var(--mono); font-size: 11px; padding: 2px 8px; border-radius: 100px; background: rgba(155,109,200,0.12); color: var(--lilac-deep); }
-  .lane-chip.active .lc { background: rgba(255,255,255,0.25); color: #fff; }
-  .lane-chip .lc.full { background: var(--pink-soft); color: var(--ink); }
+  .lane-acc { display: flex; flex-direction: column; gap: 14px; }
+  .lane-sec { border: 1.5px solid rgba(155,109,200,0.24); border-radius: 18px; background: #fff; overflow: hidden; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+  .lane-sec.open { border-color: var(--lilac-mid); box-shadow: 0 10px 30px rgba(155,109,200,0.12); }
+  .lane-sec.done:not(.open) { border-color: var(--pink-soft); background: linear-gradient(135deg, rgba(244,184,218,0.14), rgba(196,168,232,0.12)); }
+  .lane-sec-head { display: flex; align-items: center; gap: 13px; padding: 18px 22px; cursor: pointer; user-select: none; background: linear-gradient(135deg, rgba(196,168,232,0.14), rgba(244,184,218,0.1)); transition: background 0.2s ease; }
+  .lane-sec-head:hover { background: linear-gradient(135deg, rgba(196,168,232,0.24), rgba(244,184,218,0.18)); }
+  .lane-sec.open .lane-sec-head { background: linear-gradient(135deg, rgba(196,168,232,0.22), rgba(244,184,218,0.16)); }
+  .lane-sec-num { width: 32px; height: 32px; border-radius: 50%; background: rgba(155,109,200,0.16); color: var(--lilac-deep); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; font-weight: 600; flex-shrink: 0; transition: all 0.2s ease; }
+  .lane-sec.open .lane-sec-num, .lane-sec.done .lane-sec-num { background: var(--grad-magical); color: #fff; }
+  .lane-sec-title { flex: 1; }
+  .lane-sec-name { font-family: var(--serif); font-weight: 600; font-size: 19px; color: var(--ink); line-height: 1.2; }
+  .lane-sec-hint { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+  .lane-sec-count { font-family: var(--mono); font-size: 11px; padding: 4px 11px; border-radius: 100px; background: rgba(255,255,255,0.75); color: var(--lilac-deep); flex-shrink: 0; }
+  .lane-sec-count.full { background: var(--pink-soft); color: var(--ink); }
+  .lane-sec-chev { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.8); color: var(--lilac-deep); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease, background 0.2s ease; flex-shrink: 0; box-shadow: 0 2px 6px rgba(155,109,200,0.15); }
+  .lane-sec-head:hover .lane-sec-chev { background: #fff; }
+  .lane-sec.open .lane-sec-chev { transform: rotate(180deg); background: var(--grad-magical); color: #fff; }
+  .lane-sec-body { max-height: 0; overflow: hidden; transition: max-height 0.45s ease; }
+  .lane-sec.open .lane-sec-body { max-height: 8000px; }
+  .lane-sec-inner { padding: 4px 22px 22px 22px; }
+  .lane-next-row { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .lane-next-btn { background: var(--grad-deep); color: #fff; border: none; padding: 11px 26px; border-radius: 100px; font-family: var(--sans); font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 16px var(--lilac-glow); transition: transform 0.2s ease; }
+  .lane-next-btn:hover { transform: translateY(-2px); }
   .lane-builder { display: none; }
   .lane-builder.active { display: block; animation: fade-up 0.4s ease; }
   .lane-desc { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--ink-soft); margin-bottom: 20px; }
@@ -252,19 +267,22 @@
   .ms-tier { border-radius: 18px; padding: 22px 24px; margin-bottom: 16px; border: 1.5px solid rgba(155,109,200,0.18); }
   .ms-tier-free { background: linear-gradient(135deg, var(--pink-wash) 0%, var(--lilac-wash) 100%); }
   .ms-tier-low { background: #fff; }
+  .ms-tier-low .ms-item-clickable { background: linear-gradient(135deg, rgba(196,168,232,0.16), rgba(196,168,232,0.09)); }
+  .ms-tier-low .ms-item-clickable:hover { background: linear-gradient(135deg, rgba(196,168,232,0.26), rgba(196,168,232,0.16)); }
   .ms-tier-prem { background: var(--lilac-wash); border-color: rgba(155,109,200,0.3); }
   .ms-tier-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
   .ms-tier-name { font-family: var(--serif); font-weight: 600; font-size: 22px; color: var(--ink); }
   .ms-tier-price { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--lilac-deep); background: rgba(255,255,255,0.7); padding: 4px 12px; border-radius: 100px; }
   .ms-tier-why { font-size: 14px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 14px; }
   .ms-item { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,255,255,0.7); border-radius: 12px; padding: 12px 15px; margin-bottom: 8px; }
-  .ms-item-clickable { display: block; padding: 0; cursor: pointer; overflow: hidden; transition: box-shadow 0.2s ease; }
-  .ms-item-clickable:hover { box-shadow: 0 4px 14px rgba(155,109,200,0.14); }
-  .ms-item-row { display: flex; align-items: center; gap: 10px; padding: 13px 16px; }
+  .ms-item-clickable { display: block; padding: 0; cursor: pointer; overflow: hidden; transition: box-shadow 0.2s ease, background 0.2s ease; background: rgba(255,255,255,0.85); }
+  .ms-item-clickable:hover { box-shadow: 0 4px 14px rgba(155,109,200,0.16); background: #fff; }
+  .ms-item-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px; }
   .ms-item-row .ms-item-dot { margin-top: 0; }
   .ms-item-label { flex: 1; }
-  .ms-item-chev { color: var(--lilac-deep); font-size: 13px; transition: transform 0.3s ease; }
-  .ms-item-clickable.open .ms-item-chev { transform: rotate(180deg); }
+  .ms-item-chev { width: 26px; height: 26px; border-radius: 50%; background: rgba(155,109,200,0.14); color: var(--lilac-deep); font-size: 13px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease, background 0.2s ease; flex-shrink: 0; }
+  .ms-item-clickable:hover .ms-item-chev { background: rgba(155,109,200,0.24); }
+  .ms-item-clickable.open .ms-item-chev { transform: rotate(180deg); background: var(--grad-magical); color: #fff; }
   .ms-item-deeper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
   .ms-item-clickable.open .ms-item-deeper { max-height: 1600px; }
   .ms-deeper-inner { padding: 2px 16px 16px 16px; }
@@ -421,12 +439,10 @@
       <div class="step-head">
         <div class="step-badge"><span class="sb-num">2</span> Step Two of Three</div>
         <h2 class="step-h1">Build your <em>plan</em></h2>
-        <div class="step-do"><span class="sd-icon">💫</span><div class="sd-text"><b>What to do:</b> First choose how your membership works. Then pick your doorway challenge and work through the lanes. Tap a card to open it, hit the <b>+</b> to add it, up to <b>two per lane</b>.</div></div>
+        <div class="step-do"><span class="sd-icon">💫</span><div class="sd-text"><b>What to do:</b> First choose how your membership works. Then move through each section below. Pick your challenge, your offers, your artifacts, your experiences. Tap any card to read how it works.</div></div>
       </div>
       <div class="membership-band" id="membershipBand"></div>
-      <div class="lane-progress" id="laneProgress"></div>
-      <div class="lane-progress-hint" id="laneHint"></div>
-      <div id="laneBuilders"></div>
+      <div class="lane-acc" id="laneAcc"></div>
       <p class="lane-cap-note" id="laneCapNote"></p>
       <div class="stage-nav"><button class="btn btn-ghost" id="buildBack">← Back to gifts</button><button class="btn btn-primary" id="buildNext">See my plan ✦</button></div>
     </section>
@@ -452,10 +468,10 @@ const LANE_META = [
 const MEMBERSHIP_MODELS = [
   { id: 'freemium', name: 'Freemium', tag: 'A free level, plus two paid levels above it',
     desc: "You open the doors wide. Anyone can join the free level and start to feel your work, the everyday rituals and the warmth. The deeper transformation sits in your paid levels. People feel you before they pay you, and the ones who feel it want in.",
-    levels: ["<b>Free level.</b> A few real resources, open to anyone, plus your doorway challenge.","<b>Low-ticket paid.</b> Around $5 to $8 a month. Your steady rituals and the growing library.","<b>Premium paid.</b> Around $27 to $99 a month. Your deep intensives and live gatherings."] },
+    levels: ["<b>Free level.</b> A few real resources, open to anyone, plus your doorway challenge.","<b>Standard (low ticket paid).</b> Around $5 to $8 a month. Your steady rituals and the growing library.","<b>Premium paid.</b> Around $27 to $99 a month. Your deep intensives and live gatherings."] },
   { id: 'paid', name: 'Paid', tag: 'No free level. A 7-day trial leads into two paid levels',
     desc: "There's no permanently free room. Instead, your doorway challenge or a course leads people into a 7-day free trial of the level you're offering. They taste the real thing for a week, then it converts to paid. Everyone inside has chosen to be there, which changes the energy of the whole room.",
-    levels: ["<b>The doorway.</b> Promote a challenge, course, or event people actually want.","<b>7-day free trial.</b> They get a full week inside the level, free, then it converts.","<b>Low-ticket paid.</b> Around $5 to $8 a month. Your steady rituals and library.","<b>Premium paid.</b> Around $27 to $99 a month. Your deep intensives and live gatherings."] }
+    levels: ["<b>The doorway.</b> Promote a challenge, course, or event people actually want.","<b>7-day free trial.</b> They get a full week inside the level, free, then it converts.","<b>Standard (low ticket paid).</b> Around $5 to $8 a month. Your steady rituals and library.","<b>Premium paid.</b> Around $27 to $99 a month. Your deep intensives and live gatherings."] }
 ];
 
 const PATHS = [
@@ -532,11 +548,372 @@ const PATHS = [
           ]
         }
       },
-      { id: 'energy-healer', name: 'Energy Healer', blurb: 'Clears and rebalances the energy field', soon: true },
-      { id: 'akashic', name: 'Akashic Reader', blurb: 'Reads the soul records for guidance', soon: true },
-      { id: 'sound-healer', name: 'Sound Healer', blurb: 'Heals through frequency and vibration', soon: true },
-      { id: 'crystal', name: 'Crystal Practitioner', blurb: 'Works with stones for healing and grids', soon: true },
-      { id: 'shamanic', name: 'Shamanic Guide', blurb: 'Journeys and soul retrieval work', soon: true }
+      { id: 'energy-healer', name: 'Energy Healer', blurb: 'Clears and rebalances the energy field',
+        essence: "the moment the heaviness lifts and the body remembers what clear feels like", lean: "freemium",
+        challenge: { name: "The 7-Day Clear Field", length: "7 days", teaser: "A week of clearing what isn't yours to carry",
+          what: "A short challenge people move through together, one short clearing practice a day for a week, each one lifting a little more of the heaviness they've been carrying. They feel lighter by mid-week, notice they're less reactive by day seven, and come out hooked on how it feels to move through a day clear. It's the doorway. You promote this, people feel your work, and the ones who feel it want to stay.",
+          who: "People who walk around drained and don't know why, and anyone curious about energy work who wants a felt taste before they commit. New members who need a reason to show up on day one.",
+          create: ["Map seven small daily practices that build, notice the heaviness, name whose it is, clear it, protect the field, fill the space, close the day clean, then feel the difference.","Keep each day short, a few minutes of audio or one practice, so people actually finish.","Set up a daily check-in space so people move through it together, not alone.","Run it live as a cohort the first time so the energy carries and you can feel what lands.","Invite everyone who reaches day seven into the level you want them in, while they're still feeling clear."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "The Clear Field Course", teaser: "Teach them to clear themselves for good",
+              what: "A self-paced course that takes members from drained and heavy to able to clear their own field any time. Lessons they move through on their own time, each one building a skill, reading their energy, clearing it, protecting it, staying clear. You teach it once and it serves every member who joins, forever. This is the offer that gives your low-ticket level real weight.",
+              who: "Members tired of feeling at the mercy of their own energy who want to actually learn how it works, not just get cleared and crash again next week.",
+              create: ["Map the arc, read your field, clear it, protect it, fill it, keep it clear day to day.","Break it into short lessons people can finish in one sitting, so they actually complete it.","Record each as audio or video, with one small practice per lesson.","Build one practice clearing they keep and reuse long after the course.","Drop it in a classroom and let new members find it the day they join."],
+              include: "Host it as a self-paced course in its own classroom. It anchors your low-ticket level and gives every new member something to sink into right away." },
+            { name: "The Energy Upgrade Transmissions", teaser: "Downloads that shift the field the moment they press play",
+              what: "A set of channeled transmissions members receive to move their energy, downloads you bring through in alignment that clear the heaviness, lift the frequency, and upgrade how they're holding themselves. They don't study these, they receive them. One for clearing, one for motivation, one for stepping into more. Members come back to them whenever they need to shift, and because they're received rather than learned, they feel like the deepest part of your work.",
+              who: "Members who want the felt shift, not another thing to study. The ones who press play heavy and scattered and come out lighter and lit up.",
+              create: ["Get into alignment yourself first, this is received, not written. Bring through what wants to come.","Record a few distinct transmissions, one to clear, one to motivate, one to upgrade.","Keep each one felt and unhurried, so members can drop in and receive.","Name what each is for so members reach for the right one in the right moment.","Add new transmissions as they come through you, so the collection keeps deepening."],
+              include: "Keep them in a classroom members return to whenever they need to shift. Release a new transmission live now and then so members receive it together the first time." },
+            { name: "The Field Reset Program", teaser: "A few weeks of clearing, run together",
+              what: "A group program members move through together over a few weeks, clearing and rebuilding their field as a cohort. It has a beginning and an end, which makes it an easy yes, and running it together means the energy of the group carries everyone further than they'd go alone. It brings new people into your world for a focused container before they commit to the whole membership.",
+              who: "Members ready to go deep on their energy for a set stretch, and new people who'll join for a program with a clear finish line before the full thing.",
+              create: ["Design a few weeks that build, clear, protect, fill, then hold it steady.","Run it live as a cohort so the group energy carries everyone.","Give one practice between each session so the work continues off-call.","Open and close the program on set dates so it feels like a real container.","Capture what shifted for people in their own words. The contrast is your proof."],
+              include: "Run it as a cohort a few times a year inside your community, with the recordings kept in a classroom members revisit. The first round live so members feel they got the premiere." }
+          ],
+          artifacts: [
+            { name: "The Daily Clearing", teaser: "The two minutes that reset their whole day",
+              what: "A simple daily ritual inside the community. Members drop in, name how heavy they feel, and get a matched two-minute clearing for exactly that state. Over time they watch their baseline lift, and they feel the whole community clearing alongside them. It's the small habit that makes your space the first place they open when the heaviness hits.",
+              who: "Members who want your work daily, not just in the big session. The ones whose energy gets muddy fast and who need something to reach for right then.",
+              create: ["Name the handful of states members live in, like heavy, scattered, drained, wired.","Record a two-minute clearing for each, in your voice, calm and steadying.","Set up a daily check-in space where members drop their word.","Match each state with its clearing so they always know their next two minutes.","Notice out loud who's been showing up, and name the shifts you see."],
+              include: "Run it as a daily thread or pinned ritual in your Skool community. The shared check-in lets members feel each other's presence, which turns a content library into a place people belong." },
+            { name: "The Clearing Library", teaser: "Always the exact clearing they need",
+              what: "A growing shelf of short clearings for the moments real life throws at people, walked out of a hard conversation, came home from a crowded place, can't shake someone else's mood, lying awake wired and heavy. Members reach for the one they need, when they need it. Because it keeps growing, there's always a reason to return, and members feel it was built around their actual life.",
+              who: "Members who want your voice on demand and a community that keeps giving. The ones who stay subscribed because the shelf is never finished.",
+              create: ["Start with the five moments your people name most.","Record one short clearing for each, calm and specific.","Drop them into one beautifully organized classroom.","Let members request the next clearing, so the library grows from their real moments.","Announce each addition in the feed so growth feels like a gift."],
+              include: "Build it as a dedicated classroom that visibly grows. Each new clearing is a reason to post in the feed and a reason for members to come back in." },
+            { name: "The Energy Journal", teaser: "Watch your own field get lighter",
+              what: "A shared space where members log how their energy feels day to day and look back to see it lifting over time. They watch their own pattern soften, spot what drains them and what fills them, and see the community doing the work alongside them. It turns something invisible into something they can actually track, which is what keeps people doing the work past the first week.",
+              who: "Members who lose faith because energy shifts are quiet and hard to measure. The ones who need proof they're clearing so they don't quit before it lands.",
+              create: ["Give members a simple daily check-in, how heavy or clear, zero to ten, and what moved it.","Let them log it fast and look back over weeks to see the trend.","Pair a heavy day with a matched clearing so the journal does something, not just records.","Show them how to spot their own drains and fillers in the pattern.","Celebrate the lighter stretches out loud, so the slow work feels real."],
+              include: "Run it as an ongoing ritual with a weekly reflection prompt in the feed. The visible trend is what makes the quiet inner work feel real, so members stay long enough to feel it land." }
+          ],
+          experiences: [
+            { name: "The Group Clearing", teaser: "Everyone clears at once",
+              what: "A live monthly session where you clear the whole group's fields together, then leave space for people to share what lifted. The clearing is the doorway. The relief of doing it together, in a room of people who all carry too much, is what keeps them coming back.",
+              who: "Members carrying heaviness in private who ache for a room where they can set it down without explaining themselves.",
+              create: ["Open with a short grounding so everyone arrives in their body.","Clear the group's fields together for about twenty minutes, steady and unhurried.","Leave space for three people to share what lifted, no pressure on the rest.","Close clean and name the next date before you go.","Save the recording so members can clear again with it during the week."],
+              include: "Host it monthly on the Skool calendar as a signature gathering. Post a soft invitation a few days before, and let members share reflections in a thread afterward." },
+            { name: "The Energy Hot Seat", teaser: "Where they bring the heavy thing",
+              what: "A casual live where members bring whatever's weighing on their field and you clear it with them on the spot, reading what's there and lifting it while the room watches. Half clearing, half intuitive read, fully you. The rest of the room recognizes their own heaviness in someone else's.",
+              who: "Members who learn by watching you work on a real person and feeling their own field shift as you go.",
+              create: ["Open one live with a single invitation. Bring me what's sitting heavy on you.","Take three people, no more, so each gets real depth.","Read the field, name what you notice, clear it while they feel it move.","Let the rest of the room watch and clear alongside.","Save the recording, it becomes content for a week."],
+              include: "Hold it as a recurring live and let members drop what's heavy in a thread beforehand so the quieter ones still get served. Clip moments from the replay into the feed." },
+            { name: "The New Moon Clearing Ceremony", teaser: "A slow night of setting it all down",
+              what: "A slow, candlelit live pairing a simple releasing ritual with a group clearing on the new moon. Part ceremony, part deep rest, part the kind of gathering people screenshot and tell their friends about. They come to set down what they've been carrying and leave lighter than they came.",
+              who: "The members who joined for the magic, not just the tools. The ones who feel everything and rarely give themselves a night to release it.",
+              create: ["Send a simple releasing ritual a few days ahead so everyone arrives ready.","Open with the ritual to name what they're setting down.","Move into a group clearing while the guard is low.","Hold about ninety minutes total, slow and candlelit.","Close gently and notice who asks when the next one is."],
+              include: "Run it monthly on the new moon, alternating with your other lives so the rhythm always has something sacred coming. Keep it live-only the first few times." }
+          ]
+        }
+      },
+{ id: 'akashic', name: 'Akashic Reader', blurb: 'Reads the soul records for guidance',
+        essence: "the moment the records open and something they've always felt finally has words", lean: "paid",
+        challenge: { name: "The 7-Day Soul Records Opening", length: "7 days", teaser: "A week of opening the records and listening",
+          what: "A short challenge people move through together, one small practice a day for a week to open the records and receive what's there, each day a little clearer than the last. They get their first real download mid-week, surprise themselves by day seven, and come out believing they can actually access this. It's the doorway. You promote this, people feel the records open, and the ones who feel it want to stay.",
+          who: "People who sense there's guidance available to them but have never known how to reach it, and anyone curious who wants a felt taste before they commit. New members who need a reason to show up on day one.",
+          create: ["Map seven small daily practices that build, arrive, open the records, ask, receive, trust it, write it down, then read back what came.","Keep each day short, a few minutes of practice, so people actually finish.","Set up a daily check-in space so people share what they received and move through it together.","Run it live as a cohort the first time so the field is strong and you can feel what lands.","Invite everyone who reaches day seven into the level you want them in, while the records are still open."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "The Reading Your Own Records Course", teaser: "Teach them to open the records themselves",
+              what: "A self-paced course that takes members from feeling locked out to opening their own records and trusting what comes. Lessons they move through on their own time, each one building a skill, arriving, opening, asking clean questions, receiving, and telling a true download from their own noise. You teach it once and it serves every member who joins. This is the offer that gives your low-ticket level real weight.",
+              who: "Members who want their own access, not just readings from you. The ones ready to stop guessing and learn to hear the records themselves.",
+              create: ["Map the arc, arrive, open, ask, receive, discern, close the records clean.","Break it into short lessons people can finish in one sitting, so they complete it.","Record each as audio or video, with one small practice per lesson.","Build one practice opening they keep and reuse long after the course.","Drop it in a classroom and let new members find it the day they join."],
+              include: "Host it as a self-paced course in its own classroom. It anchors your low-ticket level and gives every new member something to sink into right away." },
+            { name: "The Soul Records Transmissions", teaser: "Downloads from the records the moment they press play",
+              what: "A set of channeled transmissions members receive straight from the records, downloads you bring through in alignment that answer the questions the soul keeps asking, clarity on purpose, on a pattern, on what's next. They don't study these, they receive them. Members come back whenever they're lost, and because they're received rather than reasoned, they land as the deepest part of your work.",
+              who: "Members who want the felt knowing, not another framework. The ones who press play confused and come out clear.",
+              create: ["Get into alignment and open the records yourself first, this is received, not written.","Record a few distinct transmissions, one on purpose, one on a stuck pattern, one on what's coming.","Keep each felt and unhurried, so members can drop in and receive.","Name what each is for so members reach for the right one in the right moment.","Add new transmissions as they come through, so the collection keeps deepening."],
+              include: "Keep them in a classroom members return to whenever they need to shift. Release a new one live now and then so members receive it together the first time." },
+            { name: "The Records Deep-Dive Program", teaser: "A few weeks in the records, run together",
+              what: "A group program members move through together over a few weeks, opening the records on one soul theme at a time as a cohort. It has a beginning and an end, which makes it an easy yes, and moving through it together means the field holds everyone deeper than they'd go alone. It brings new people into your world for a focused container before they commit to the whole membership.",
+              who: "Members ready to go deep in the records for a set stretch, and new people who'll join for a program with a clear finish line first.",
+              create: ["Design a few weeks, each opening the records on one theme, purpose, relationships, blocks, what's next.","Run it live as a cohort so the field carries everyone.","Give one practice between sessions so the receiving continues off-call.","Open and close on set dates so it feels like a real container.","Capture what people received in their own words. The clarity is your proof."],
+              include: "Run it as a cohort a few times a year inside your community, with the recordings kept in a classroom members revisit. The first round live so members feel they got the premiere." }
+          ],
+          artifacts: [
+            { name: "The Daily Pull", teaser: "One small message to open the day",
+              what: "A simple daily ritual inside the community. Members drop in and receive one short message from the records to carry through the day, a line, a nudge, a knowing. Over time they start to feel the thread of it, and they feel the whole community listening alongside them. It's the small habit that makes your space the first place they open in the morning.",
+              who: "Members who want your work daily, not just in the big reading. The ones who crave a small piece of guidance to start from.",
+              create: ["Pull or channel one short message each day, or set up a way members can pull their own.","Keep each one short and open enough to land differently for everyone.","Set up a daily space where members share what it stirred.","Invite them to write down how it played out by evening.","Notice out loud the threads you see running through the week."],
+              include: "Run it as a daily thread or pinned ritual in your Skool community. The shared check-in lets members feel each other's presence, which turns a content library into a place people belong." },
+            { name: "The Records Library", teaser: "Always the reading they need",
+              what: "A growing shelf of short recorded readings for the questions the soul keeps asking, what's my purpose, why does this keep happening, what's the lesson here, what's coming next. Members reach for the one that matches their moment. Because it keeps growing, there's always a reason to return, and members feel it was built around the real questions they carry.",
+              who: "Members who want your voice on demand and a community that keeps giving. The ones who stay subscribed because the shelf is never finished.",
+              create: ["Start with the five questions your people ask most.","Record one short reading for each, clear and specific.","Drop them into one beautifully organized classroom.","Let members request the next reading, so the library grows from their real questions.","Announce each addition in the feed so growth feels like a gift."],
+              include: "Build it as a dedicated classroom that visibly grows. Each new addition is a reason to post in the feed and a reason for members to come back in." },
+            { name: "The Soul Journal", teaser: "Watch the guidance prove itself over time",
+              what: "A shared space where members log the guidance they receive and come back to see how it played out. They watch their own knowing get more accurate, learn to trust what they hear, and see the community doing the same. It turns fleeting downloads into a record they can look back on, which is what builds real trust in their own access.",
+              who: "Members who doubt what they receive because it's easy to forget and hard to verify. The ones who need proof their knowing is real so they keep listening.",
+              create: ["Give members a simple space to log what they received and the question behind it.","Let them come back to mark how it unfolded.","Pair a foggy day with a short practice for opening the records.","Show them how to spot their own accurate hits in the pattern.","Celebrate the moments a download proved true, out loud."],
+              include: "Run it as an ongoing ritual with a weekly reflection prompt in the feed. The visible trend is what makes the quiet inner work feel real, so members stay long enough to feel it land." }
+          ],
+          experiences: [
+            { name: "The Group Records Reading", teaser: "The records open for the whole room",
+              what: "A live monthly session where you open the records on a shared theme for the whole group, then leave space for people to share what landed. The reading is the doorway. The wonder of receiving together, in a room of people all listening for the same thing, is what keeps them coming back.",
+              who: "Members hungry for guidance who feel more open in a room that's listening together than they ever do alone.",
+              create: ["Pick one soul theme per session, like purpose or a pattern the group keeps naming.","Open with a short grounding so everyone arrives ready to receive.","Open the records on the theme and speak what comes for about twenty minutes.","Leave space for three people to share what landed for them, no pressure on the rest.","Close the records clean and name the next date and theme before you go."],
+              include: "Host it monthly on the Skool calendar as a signature gathering. Post a soft invitation a few days before, and let members share reflections in a thread afterward." },
+            { name: "The Records Hot Seat", teaser: "Where they bring the question",
+              what: "A casual live where members bring the question the soul keeps asking and you open the records for them on the spot, reading what's there while the room listens. Half reading, half intuitive channel, fully you. The rest of the room recognizes their own question in someone else's.",
+              who: "Members who learn by watching you read a real person and feeling their own answer stir as you go.",
+              create: ["Open one live with a single invitation. Bring me the question you keep circling.","Take three people, no more, so each gets a real reading.","Open the records, speak what comes, name what you notice.","Let the rest of the room listen and receive alongside.","Save the recording, it becomes content for a week."],
+              include: "Hold it as a recurring live and let members drop what they want looked at in a thread beforehand so the quieter ones still get served. Clip moments from the replay into the feed." },
+            { name: "The Full Moon Records Ceremony", teaser: "A slow night of listening deep",
+              what: "A slow, candlelit live pairing a simple opening ritual with a group records reading on the full moon. Part ceremony, part deep listening, part the kind of gathering people screenshot and tell their friends about. They come to hear what the soul's been trying to say and leave with words for it.",
+              who: "The members who joined for the magic, not just the tools. The ones who feel a deep pull toward their own guidance and rarely give it a sacred night.",
+              create: ["Send a simple opening ritual a few days ahead so everyone arrives ready.","Open with the ritual to settle and open the field.","Open the records for the group while everyone's quiet and receptive.","Hold about ninety minutes total, slow and candlelit.","Close gently and notice who asks when the next one is."],
+              include: "Run it monthly, alternating with your other lives so the rhythm always has something sacred coming. Keep it live-only the first few times." }
+          ]
+        }
+      },
+{ id: 'sound-healer', name: 'Sound Healer', blurb: 'Heals through frequency and vibration',
+        essence: "the moment the sound moves through the body and something long-held finally loosens", lean: "freemium",
+        challenge: { name: "The 7-Day Sound Bath", length: "7 days", teaser: "A week of sound that settles the whole system",
+          what: "A short challenge people move through together, one short sound journey a day for a week, each one settling their nervous system a little deeper. They feel calmer by mid-week, notice they're sleeping better by day seven, and come out hooked on how sound moves through them. It's the doorway. You promote this, people feel the frequency work, and the ones who feel it want to stay.",
+          who: "People wound tight and overstimulated who need something that works without effort, and anyone curious who wants a felt taste before they commit. New members who need a reason to show up on day one.",
+          create: ["Record seven short sound journeys that build, ground, release tension, open the chest, calm the mind, restore, then rest deep.","Keep each one short enough that people actually press play daily.","Set up a daily check-in space so people share how the sound landed and move through it together.","Run one session live so the group receives together and you feel what lands.","Invite everyone who reaches day seven into the level you want them in, while they're still humming."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "The Sound Healing Foundations Course", teaser: "Teach them to use sound on themselves",
+              what: "A self-paced course that takes members from tense and dysregulated to able to use sound and their own voice to settle themselves. Lessons they move through on their own time, each one a tool, toning, humming, using bowls or simple sounds, listening for what their body needs. You teach it once and it serves every member who joins. This is the offer that gives your low-ticket level real weight.",
+              who: "Members who love how your sessions feel and want to bring the practice home, not just wait for the next live.",
+              create: ["Map the arc, listen to the body, tone, hum, use simple instruments, build a short daily practice.","Break it into short lessons people can finish in one sitting.","Record each as audio or video, with one practice per lesson they can feel.","Build one short sound practice they keep and reuse long after the course.","Drop it in a classroom and let new members find it the day they join."],
+              include: "Host it as a self-paced course in its own classroom. It anchors your low-ticket level and gives every new member something to sink into right away." },
+            { name: "The Frequency Transmissions", teaser: "Sound downloads that shift the body the moment they press play",
+              what: "A set of recorded sound transmissions members receive to move their state, frequencies you bring through in alignment that clear tension, lift the mood, and drop them into rest. They don't study these, they receive them. One to release, one to energize, one to sleep. Members come back whenever they need to shift, and because the sound works on the body directly, they feel like the deepest part of your work.",
+              who: "Members who want the felt shift, not another practice to learn. The ones who press play wired and come out settled.",
+              create: ["Get into alignment and let the sound come through you, this is received, not arranged.","Record a few distinct transmissions, one to release, one to energize, one for deep sleep.","Keep each one immersive and unhurried, so members can drop in and receive.","Name what each is for so members reach for the right frequency in the right moment.","Add new transmissions as they move through you, so the collection keeps deepening."],
+              include: "Keep them in a classroom members return to whenever they need to shift. Release a new one live now and then so members receive it together the first time." },
+            { name: "The Nervous System Reset Program", teaser: "A few weeks of sound, run together",
+              what: "A group program members move through together over a few weeks, using sound to bring a frazzled nervous system back to rest as a cohort. It has a beginning and an end, which makes it an easy yes, and receiving the sound together deepens it beyond what they'd reach alone. It brings new people into your world for a focused container before they commit to the whole membership.",
+              who: "Members living in fight-or-flight who want a set stretch to come down, and new people who'll join for a program with a clear finish line first.",
+              create: ["Design a few weeks of live sound sessions that build from release to deep rest.","Run it live as a cohort so the shared field deepens the sound.","Give one short sound practice between sessions to hold the calm.","Open and close on set dates so it feels like a real container.","Capture how people's sleep and stress shifted in their words. The contrast is your proof."],
+              include: "Run it as a cohort a few times a year inside your community, with the recordings kept in a classroom members revisit. The first round live so members feel they got the premiere." }
+          ],
+          artifacts: [
+            { name: "The Daily Tone", teaser: "The two minutes of sound that reset their day",
+              what: "A simple daily ritual inside the community. Members drop in, name how they feel, and get a matched short sound clip to shift it, a tone to release, a hum to ground, a frequency to lift. Over time they feel their baseline settle, and they feel the community tuning in alongside them. It's the small habit that makes your space the first place they open when they're frayed.",
+              who: "Members who want your work daily, not just in the live bath. The ones who get overstimulated fast and need something to reach for right then.",
+              create: ["Name the handful of states members live in, like wired, heavy, flat, anxious.","Record a short sound clip for each, in your voice or bowls, that shifts it.","Set up a daily check-in space where members drop their word.","Match each state with its sound so they always know what to press play.","Notice out loud who's tuning in, and name the shifts you hear about."],
+              include: "Run it as a daily thread or pinned ritual in your Skool community. The shared check-in lets members feel each other's presence, which turns a content library into a place people belong." },
+            { name: "The Sound Library", teaser: "Always the frequency they need",
+              what: "A growing shelf of short sound journeys for the moments real life throws at people, can't wind down, need focus, heart's aching, can't sleep. Members reach for the one that matches their moment. Because it keeps growing, there's always a reason to return, and members feel it was built around their actual days.",
+              who: "Members who want your sound on demand and a community that keeps giving. The ones who stay subscribed because the shelf is never finished.",
+              create: ["Start with the five moments your people name most.","Record one short sound journey for each, immersive and specific.","Drop them into one beautifully organized classroom.","Let members request the next one, so the library grows from their real moments.","Announce each addition in the feed so growth feels like a gift."],
+              include: "Build it as a dedicated classroom that visibly grows. Each new addition is a reason to post in the feed and a reason for members to come back in." },
+            { name: "The Resonance Journal", teaser: "Watch the sound settle you over time",
+              what: "A shared space where members log how regulated they feel and look back to see it steadying as the sound work adds up. They watch their own baseline calm, learn which frequencies do what for them, and see the community doing the same. It turns something felt-but-fleeting into a trend they can see, which keeps people practicing past the first week.",
+              who: "Members who lose faith because regulation is quiet and easy to forget. The ones who need proof the sound is working so they keep pressing play.",
+              create: ["Give members a simple daily check-in, how settled, zero to ten, and which sound they used.","Let them log it fast and look back over weeks to see the trend.","Pair a wired day with a matched sound so the journal does something, not just records.","Show them which frequencies steady them most in the pattern.","Celebrate the calmer stretches out loud, so the slow work feels real."],
+              include: "Run it as an ongoing ritual with a weekly reflection prompt in the feed. The visible trend is what makes the quiet inner work feel real, so members stay long enough to feel it land." }
+          ],
+          experiences: [
+            { name: "The Group Sound Bath", teaser: "The whole room bathed in sound at once",
+              what: "A live monthly sound bath where you play the whole group into deep rest, then leave a little space for people to share how they surfaced. The bath is the doorway. The depth of receiving sound together, in a room all dropping in at once, is what keeps them coming back.",
+              who: "Members starved for rest who go somewhere in a group bath they can never quite reach alone at home.",
+              create: ["Open with a short grounding so everyone lands in their body.","Play the group into deep rest for a solid stretch, unhurried.","Leave a little space for a few to share how they surfaced, no pressure.","Close soft and name the next date before you go.","Save the recording so members can bathe again with it during the week."],
+              include: "Host it monthly on the Skool calendar as a signature gathering. Post a soft invitation a few days before, and let members share reflections in a thread afterward." },
+            { name: "The Sound Hot Seat", teaser: "Where they bring what needs to move",
+              what: "A casual live where members name what's stuck or heavy and you meet it with sound on the spot, toning into it while the room receives. Half sound healing, half intuitive read of what frequency they need, fully you. The rest of the room feels their own stuck places move too.",
+              who: "Members who learn by watching you work sound on a real person and feeling their own body respond.",
+              create: ["Open one live with a single invitation. Tell me what needs to move.","Take three people, no more, so each gets real depth.","Read what they need, then tone or play into it while they feel it shift.","Let the rest of the room receive alongside.","Save the recording, it becomes content for a week."],
+              include: "Hold it as a recurring live and let members drop what they want looked at in a thread beforehand so the quieter ones still get served. Clip moments from the replay into the feed." },
+            { name: "The Full Moon Sound Ceremony", teaser: "A slow night of sound and release",
+              what: "A slow, candlelit live pairing a simple releasing ritual with an extended sound bath on the full moon. Part ceremony, part deep rest, part the kind of gathering people screenshot and tell their friends about. They come to let the sound carry out what they've been holding and leave lighter than they came.",
+              who: "The members who joined for the magic, not just the tools. The ones who feel everything in the body and rarely give themselves a night to let sound move it.",
+              create: ["Send a simple releasing intention a few days ahead so everyone arrives ready.","Open with the ritual to name what they're setting down.","Move into an extended sound bath while the guard is low.","Hold about ninety minutes total, slow and candlelit.","Close gently and notice who asks when the next one is."],
+              include: "Run it monthly, alternating with your other lives so the rhythm always has something sacred coming. Keep it live-only the first few times." }
+          ]
+        }
+      },
+{ id: 'crystal', name: 'Crystal Practitioner', blurb: 'Works with stones for healing and grids',
+        essence: "the moment the right stone meets the right need and something quietly clicks into place", lean: "freemium",
+        challenge: { name: "The 7-Day Crystal Companion", length: "7 days", teaser: "A week of working one stone at a time",
+          what: "A short challenge people move through together, one stone and one small practice a day for a week, each day working with a different crystal for a different need. They feel the difference mid-week, get attached to their stones by day seven, and come out seeing crystals as real allies, not decoration. It's the doorway. You promote this, people feel the stones work, and the ones who feel it want to stay.",
+          who: "People who own crystals but only ever set them on a shelf, and anyone curious who wants a felt taste before they commit. New members who need a reason to show up on day one.",
+          create: ["Pick seven stones and pair each with one small daily practice and the need it meets.","Keep each day short, one stone, one practice, so people actually finish.","Set up a daily check-in space so people share what they felt and move through it together.","Run one session live so the group works a stone together and you feel what lands.","Invite everyone who reaches day seven into the level you want them in, while the stones are still humming."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "The Working With Stones Course", teaser: "Teach them to actually use their crystals",
+              what: "A self-paced course that takes members from a shelf of pretty stones to knowing how to choose, cleanse, and work with crystals for what they actually need. Lessons they move through on their own time, each one a skill, choosing a stone, clearing it, pairing it with an intention, building a simple grid. You teach it once and it serves every member who joins. This is the offer that gives your low-ticket level real weight.",
+              who: "Members with a growing crystal collection they don't know how to use, ready to stop guessing and actually work with their stones.",
+              create: ["Map the arc, choose, cleanse, charge, pair with intention, build a simple grid.","Break it into short lessons people can finish in one sitting.","Record each as audio or video, with one practice per lesson.","Build one simple grid template they keep and reuse long after the course.","Drop it in a classroom and let new members find it the day they join."],
+              include: "Host it as a self-paced course in its own classroom. It anchors your low-ticket level and gives every new member something to sink into right away." },
+            { name: "The Crystal Activation Transmissions", teaser: "Downloads that charge their stones and their state",
+              what: "A set of recorded transmissions members receive to attune to their stones, activations you bring through in alignment that clear the crystal, charge it, and drop the member into the frequency that stone carries. They don't study these, they receive them with their stone in hand. One for grounding stones, one for heart stones, one for protection. Members come back whenever they work with a crystal, and because it's received, it lands as the deepest part of your work.",
+              who: "Members who want to feel their stones actually do something, not just hold them and hope. The ones who press play flat and come out attuned.",
+              create: ["Get into alignment and let the activation come through you with the stone present.","Record a few distinct transmissions grouped by stone type, grounding, heart, protection.","Keep each felt and unhurried, so members can drop in with their stone and receive.","Name what each is for so members reach for the right one for their stone.","Add new transmissions as they come through, so the collection keeps deepening."],
+              include: "Keep them in a classroom members return to whenever they need to shift. Release a new one live now and then so members receive it together the first time." },
+            { name: "The Crystal Grid Program", teaser: "A few weeks of building grids, run together",
+              what: "A group program members move through together over a few weeks, building crystal grids for real intentions as a cohort, one grid theme at a time. It has a beginning and an end, which makes it an easy yes, and building alongside others deepens the intention beyond what they'd hold alone. It brings new people into your world for a focused container before they commit to the whole membership.",
+              who: "Members ready to work their stones with real intention for a set stretch, and new people who'll join for a program with a clear finish line first.",
+              create: ["Design a few weeks, each building a grid for one theme, protection, abundance, love, clarity.","Run it live as a cohort so members build together and share their grids.","Give one practice between sessions so the grid keeps working off-call.","Open and close on set dates so it feels like a real container.","Capture what shifted while their grids were up, in their words. The contrast is your proof."],
+              include: "Run it as a cohort a few times a year inside your community, with the recordings kept in a classroom members revisit. The first round live so members feel they got the premiere." }
+          ],
+          artifacts: [
+            { name: "The Daily Stone", teaser: "One crystal to carry through the day",
+              what: "A simple daily ritual inside the community. Members drop in, name what they need, and get matched with a stone to work with that day and a one-line practice. Over time they build a real relationship with their collection, and they feel the community carrying stones alongside them. It's the small habit that makes your space the first place they open in the morning.",
+              who: "Members who want your work daily, not just in the big session. The ones who own stones and want a reason to actually pick one up.",
+              create: ["Match the common needs members name with the stones that meet them.","Write a one-line practice for each so they know how to work it.","Set up a daily check-in space where members drop what they need.","Match each need with its stone so they always know which to carry.","Notice out loud who's working their stones, and name what they report."],
+              include: "Run it as a daily thread or pinned ritual in your Skool community. The shared check-in lets members feel each other's presence, which turns a content library into a place people belong." },
+            { name: "The Crystal Library", teaser: "Always the stone guidance they need",
+              what: "A growing shelf of short guides for the stones and the moments real life throws at people, need grounding, want protection, heart's heavy, can't focus. Members reach for the stone and practice that matches. Because it keeps growing, there's always a reason to return, and members feel it was built around what they actually reach for.",
+              who: "Members who want your crystal knowledge on demand and a community that keeps giving. The ones who stay subscribed because the shelf is never finished.",
+              create: ["Start with the stones and needs your people name most.","Record one short guide for each, clear and specific about how to work it.","Drop them into one beautifully organized classroom.","Let members request the next stone, so the library grows from their real questions.","Announce each addition in the feed so growth feels like a gift."],
+              include: "Build it as a dedicated classroom that visibly grows. Each new addition is a reason to post in the feed and a reason for members to come back in." },
+            { name: "The Grid Journal", teaser: "Watch what shifts while the grid is up",
+              what: "A shared space where members log the grids and stones they work with and note what shifts while they're active. They watch their own results build, learn which stones do what for them, and see the community working alongside. It turns quiet crystal work into a record they can look back on, which keeps people believing and practicing past the first week.",
+              who: "Members who lose faith because crystal work is subtle and easy to dismiss. The ones who need proof the stones are doing something so they keep working them.",
+              create: ["Give members a simple space to log the stone or grid and the intention behind it.","Let them come back to note what shifted while it was active.","Pair a scattered day with a matched stone so the journal does something, not just records.","Show them which stones seem to work best for them in the pattern.","Celebrate the moments a grid clearly landed, out loud."],
+              include: "Run it as an ongoing ritual with a weekly reflection prompt in the feed. The visible trend is what makes the quiet inner work feel real, so members stay long enough to feel it land." }
+          ],
+          experiences: [
+            { name: "The Group Grid", teaser: "The whole room builds one grid together",
+              what: "A live monthly session where the group builds a crystal grid around a shared intention, each member laying their own stones as you guide it, then a little space to share. The grid is the doorway. The power of setting an intention together, everyone's stones in the same field, is what keeps them coming back.",
+              who: "Members who want their intentions held by more than themselves and feel the difference of building in a room together.",
+              create: ["Pick one shared intention per session, like protection or abundance for the month.","Open with a short grounding so everyone arrives with their stones.","Guide the group to build their grids together, step by step.","Leave space for a few to share their grid and intention, no pressure on the rest.","Close clean and name the next date and intention before you go."],
+              include: "Host it monthly on the Skool calendar as a signature gathering. Post a soft invitation a few days before, and let members share reflections in a thread afterward." },
+            { name: "The Crystal Hot Seat", teaser: "Where they bring what they're working on",
+              what: "A casual live where members bring what they're moving through and you match them with the right stones and a grid on the spot, reading what they need while the room learns. Half crystal knowledge, half intuitive read, fully you. The rest of the room recognizes their own situation in someone else's.",
+              who: "Members who learn by watching you choose stones for a real person and seeing why.",
+              create: ["Open one live with a single invitation. Tell me what you're working through.","Take three people, no more, so each gets real depth.","Read what they need, name the stones, sketch a grid they can build.","Let the rest of the room learn alongside.","Save the recording, it becomes content for a week."],
+              include: "Hold it as a recurring live and let members drop what they want looked at in a thread beforehand so the quieter ones still get served. Clip moments from the replay into the feed." },
+            { name: "The New Moon Crystal Ceremony", teaser: "A slow night of stones and intention",
+              what: "A slow, candlelit live pairing a simple intention ritual with a group crystal grid on the new moon. Part ceremony, part quiet magic, part the kind of gathering people screenshot and tell their friends about. They come to set an intention with their stones and leave with a grid holding it for the month.",
+              who: "The members who joined for the magic, not just the tools. The ones who love their stones and rarely give them a sacred night of real work.",
+              create: ["Send a simple intention prompt a few days ahead so everyone arrives with their stones.","Open with the ritual to name what they're planting this moon.","Guide the group to build their new moon grids together.","Hold about ninety minutes total, slow and candlelit.","Close gently and notice who asks when the next one is."],
+              include: "Run it monthly, alternating with your other lives so the rhythm always has something sacred coming. Keep it live-only the first few times." }
+          ]
+        }
+      },
+{ id: 'shamanic', name: 'Shamanic Guide', blurb: 'Journeys and soul retrieval work',
+        essence: "the moment a lost piece comes home and the body remembers it was always whole", lean: "paid",
+        challenge: { name: "The 7-Day Journey Home", length: "7 days", teaser: "A week of journeying and gathering yourself back",
+          what: "A short challenge people move through together, one short guided journey a day for a week, each one meeting a part of themselves and inviting it home. They meet something real mid-week, feel more whole by day seven, and come out knowing there's a way back to the pieces they've lost. It's the doorway. You promote this, people feel the journey work, and the ones who feel it want to stay.",
+          who: "People who feel scattered or like a part of them went missing somewhere along the way, and anyone curious who wants a felt taste before they commit. New members who need a reason to show up on day one.",
+          create: ["Record seven short guided journeys that build, meet a guide, walk the lower world, meet a lost part, invite it home, integrate, then rest.","Keep each one short enough that people actually journey daily.","Set up a daily check-in space so people share what they met and move through it together.","Run one journey live so the group travels together and you feel what lands.","Invite everyone who reaches day seven into the level you want them in, while they're still open."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "The Journeying Course", teaser: "Teach them to journey on their own",
+              what: "A self-paced course that takes members from never having journeyed to being able to drop in, meet their guides, and travel safely on their own. Lessons they move through on their own time, each one a skill, setting sacred space, finding the rhythm, meeting a guide, journeying with a question, coming back grounded. You teach it once and it serves every member who joins. This is the offer that gives your low-ticket level real weight.",
+              who: "Members drawn to shamanic work who want their own practice, not just to be journeyed by you. The ones ready to learn to travel themselves.",
+              create: ["Map the arc, set space, find the rhythm, meet a guide, journey with intention, return and ground.","Break it into short lessons people can finish in one sitting.","Record each as audio or video, with one guided journey per lesson.","Build one journey they keep and return to long after the course.","Drop it in a classroom and let new members find it the day they join."],
+              include: "Host it as a self-paced course in its own classroom. It anchors your low-ticket level and gives every new member something to sink into right away." },
+            { name: "The Soul Retrieval Transmissions", teaser: "Downloads that call the lost pieces home",
+              what: "A set of recorded transmissions members receive to call their scattered pieces back, journeys you bring through in alignment that reach for what got left behind and invite it home. They don't study these, they receive them lying down with eyes closed. One to gather energy, one to reclaim power, one to come home to the body. Members return whenever they feel fragmented, and because it's received soul work, it lands as the deepest part of your world.",
+              who: "Members who feel pieces of themselves are missing and want them back, not another concept. The ones who press play scattered and come out gathered.",
+              create: ["Get into alignment and journey the transmission yourself first, this is received, not scripted.","Record a few distinct transmissions, one to gather energy, one to reclaim power, one to return to the body.","Keep each felt and unhurried, so members can lie down and receive.","Name what each is for so members reach for the right journey in the right moment.","Add new transmissions as they come through, so the collection keeps deepening."],
+              include: "Keep them in a classroom members return to whenever they need to shift. Release a new one live now and then so members receive it together the first time." },
+            { name: "The Soul Retrieval Program", teaser: "A few weeks of journeying, run together",
+              what: "A group program members move through together over a few weeks, journeying to retrieve lost pieces as a cohort, one theme at a time. It has a beginning and an end, which makes it an easy yes, and traveling together holds people through the deeper parts they'd avoid alone. It brings new people into your world for a focused container before they commit to the whole membership.",
+              who: "Members ready to do real soul work for a set stretch, and new people who'll join for a program with a clear finish line first.",
+              create: ["Design a few weeks, each journeying for one theme, power, a lost part, an ancestor, wholeness.","Run it live as a cohort so the group field holds the deeper work.","Give one practice between sessions so integration continues off-call.","Open and close on set dates so it feels like a real container.","Capture what came home for people in their own words. The wholeness is your proof."],
+              include: "Run it as a cohort a few times a year inside your community, with the recordings kept in a classroom members revisit. The first round live so members feel they got the premiere." }
+          ],
+          artifacts: [
+            { name: "The Daily Journey", teaser: "A few minutes to drop in and gather",
+              what: "A simple daily ritual inside the community. Members drop into a short journey or grounding practice to gather themselves before the day scatters them. Over time they build a real relationship with their inner world, and they feel the community traveling alongside them. It's the small habit that makes your space the first place they open in the morning.",
+              who: "Members who want your work daily, not just in the big journey. The ones who scatter fast and need a way to gather before they start.",
+              create: ["Record a handful of short journeys and grounding practices for different starts to the day.","Keep each one short enough to do before the day begins.","Set up a daily check-in space where members share what they met.","Match a state to a practice so they know where to drop in.","Notice out loud the threads running through what people meet."],
+              include: "Run it as a daily thread or pinned ritual in your Skool community. The shared check-in lets members feel each other's presence, which turns a content library into a place people belong." },
+            { name: "The Journey Library", teaser: "Always the journey they need",
+              what: "A growing shelf of short guided journeys for the moments real life throws at people, feeling powerless, needing a guide's counsel, carrying grief, seeking a decision. Members reach for the journey that matches. Because it keeps growing, there's always a reason to return, and members feel it was built around what they actually move through.",
+              who: "Members who want your journeys on demand and a community that keeps giving. The ones who stay subscribed because the shelf is never finished.",
+              create: ["Start with the five needs your people name most.","Record one short guided journey for each, clear and safe.","Drop them into one beautifully organized classroom.","Let members request the next journey, so the library grows from their real needs.","Announce each addition in the feed so growth feels like a gift."],
+              include: "Build it as a dedicated classroom that visibly grows. Each new addition is a reason to post in the feed and a reason for members to come back in." },
+            { name: "The Soul Journal", teaser: "Watch yourself come back to whole",
+              what: "A shared space where members log what they meet on their journeys and track how much more whole and grounded they feel over time. They watch their own fragmentation heal, learn what their guides keep showing them, and see the community doing the work alongside. It turns fleeting journey work into a record they can look back on, which keeps people traveling past the first week.",
+              who: "Members who lose the thread because journey work is easy to forget by morning. The ones who need to see themselves gathering back so they keep going.",
+              create: ["Give members a simple space to log what they met and what it meant.","Let them come back to mark how whole and grounded they feel over weeks.","Pair a scattered day with a short gathering journey so the journal does something.","Show them the recurring guides and symbols in their pattern.","Celebrate the moments a lost piece clearly came home, out loud."],
+              include: "Run it as an ongoing ritual with a weekly reflection prompt in the feed. The visible trend is what makes the quiet inner work feel real, so members stay long enough to feel it land." }
+          ],
+          experiences: [
+            { name: "The Group Journey", teaser: "The whole room travels at once",
+              what: "A live monthly session where you drum and guide the whole group through a journey on a shared theme, then leave space to share what they met. The journey is the doorway. The safety of traveling together, held in the same rhythm, is what lets people go deeper than they would alone and keeps them coming back.",
+              who: "Members drawn to journey work who feel safer and go further traveling in a held group than they ever do by themselves.",
+              create: ["Pick one journey theme per session, like meeting a guide or reclaiming power.","Open with a short grounding and set sacred space for the group.","Drum and guide the group through the journey together.","Leave space for a few to share what they met, no pressure on the rest.","Close by grounding everyone and name the next date and theme before you go."],
+              include: "Host it monthly on the Skool calendar as a signature gathering. Post a soft invitation a few days before, and let members share reflections in a thread afterward." },
+            { name: "The Journey Hot Seat", teaser: "Where they bring what they're seeking",
+              what: "A casual live where a member names what they're seeking and you journey on their behalf on the spot, bringing back what you're shown while the room witnesses. Half shamanic journey, half intuitive read, fully you. The rest of the room recognizes their own seeking in someone else's.",
+              who: "Members who learn by watching you journey for a real person and feeling their own answer stir.",
+              create: ["Open one live with a single invitation. Tell me what you're seeking.","Take three people, no more, so each gets a real journey.","Journey on their behalf, then share what you were shown.","Let the rest of the room witness and receive alongside.","Save the recording, it becomes content for a week."],
+              include: "Hold it as a recurring live and let members drop what they want looked at in a thread beforehand so the quieter ones still get served. Clip moments from the replay into the feed." },
+            { name: "The Full Moon Fire Ceremony", teaser: "A slow night of release by fire",
+              what: "A slow, candlelit live pairing a simple fire-release ritual with a group journey on the full moon. Part ceremony, part deep soul work, part the kind of gathering people screenshot and tell their friends about. They come to release what they've carried into the fire and journey to what wants to come home.",
+              who: "The members who joined for the magic, not just the tools. The ones who feel the pull of old ways and rarely give themselves a sacred night to honor it.",
+              create: ["Send a simple fire-release prompt a few days ahead so everyone arrives ready.","Open with the ritual, everyone naming what they release to the fire.","Drum and guide a group journey while the field is open.","Hold about ninety minutes total, slow and candlelit.","Close by grounding everyone and notice who asks when the next one is."],
+              include: "Run it monthly, alternating with your other lives so the rhythm always has something sacred coming. Keep it live-only the first few times." }
+          ]
+        }
+      },
+{ id: 'breathwork', name: 'Breathwork Practitioner', blurb: 'Moves energy and emotion through the breath',
+        essence: "the moment the breath breaks something open and what was stuck finally moves", lean: "freemium",
+        challenge: { name: "The 7-Day Breath Reset", length: "7 days", teaser: "A week of breathing something loose",
+          what: "A short challenge people move through together, one short breath practice a day for a week, each one moving a little more of what's been stuck. They feel something shift mid-week, feel lighter and more alive by day seven, and come out amazed that their own breath can do this. It's the doorway. You promote this, people feel the breathwork move them, and the ones who feel it want to stay.",
+          who: "People holding tension and old emotion in the body who've never had a way to move it, and anyone curious who wants a felt taste before they commit. New members who need a reason to show up on day one.",
+          create: ["Record seven short breath practices that build, settle, energize, release tension, open the chest, move emotion, then integrate.","Keep each one short enough that people actually practice daily.","Set up a daily check-in space so people share what moved and go through it together.","Run one session live so the group breathes together and you feel what lands.","Invite everyone who reaches day seven into the level you want them in, while they're still buzzing."],
+          include: "This is your front door. Promote it on its own to draw new people in, then funnel finishers into your membership. In freemium it can run free to anyone. In a paid model it becomes the 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid." },
+        lanes: {
+          offers: [
+            { name: "The Breathwork Foundations Course", teaser: "Teach them to use the breath on themselves",
+              what: "A self-paced course that takes members from holding everything in the body to being able to breathe through tension, emotion, and stuckness on their own. Lessons they move through on their own time, each one a technique, calming breath, activating breath, emotional release breath, and how to move through what comes up safely. You teach it once and it serves every member who joins. This is the offer that gives your low-ticket level real weight.",
+              who: "Members who feel how much breathwork moves and want to practice it at home, not just wait for the next live session.",
+              create: ["Map the arc, calming breath, activating breath, release breath, integrating what surfaces.","Break it into short lessons people can finish in one sitting.","Record each as audio or video, with one guided breath practice per lesson.","Build one short daily breath practice they keep long after the course.","Drop it in a classroom and let new members find it the day they join."],
+              include: "Host it as a self-paced course in its own classroom. It anchors your low-ticket level and gives every new member something to sink into right away." },
+            { name: "The Breath Activation Transmissions", teaser: "Guided breath journeys that move them the moment they press play",
+              what: "A set of recorded breath journeys members receive to shift their state, sessions you guide from alignment that clear tension, release held emotion, and drop them into aliveness. They don't study these, they breathe and receive. One to calm, one to energize, one to release. Members come back whenever they need to move something, and because the breath works on the body directly, they land as the deepest part of your work.",
+              who: "Members who want the felt shift, not another technique to master. The ones who press play tight and come out cracked open and alive.",
+              create: ["Get into alignment and guide the breath journey from that place, felt not clinical.","Record a few distinct journeys, one to calm, one to energize, one to release emotion.","Keep each immersive and unhurried, so members can lie down and breathe with you.","Name what each is for so members reach for the right one in the right moment.","Add new journeys as they move through you, so the collection keeps deepening."],
+              include: "Keep them in a classroom members return to whenever they need to shift. Release a new one live now and then so members receive it together the first time." },
+            { name: "The Emotional Release Program", teaser: "A few weeks of breathwork, run together",
+              what: "A group program members move through together over a few weeks, using the breath to move stuck emotion as a cohort, one layer at a time. It has a beginning and an end, which makes it an easy yes, and breathing together holds people through the big releases they'd brace against alone. It brings new people into your world for a focused container before they commit to the whole membership.",
+              who: "Members carrying old emotion in the body who want a set stretch to move it, and new people who'll join for a program with a clear finish line first.",
+              create: ["Design a few weeks of live breath sessions that build from settling to deeper release.","Run it live as a cohort so the shared field holds the bigger releases.","Give one short breath practice between sessions to integrate.","Open and close on set dates so it feels like a real container.","Capture what people released and how they feel now, in their words. The contrast is your proof."],
+              include: "Run it as a cohort a few times a year inside your community, with the recordings kept in a classroom members revisit. The first round live so members feel they got the premiere." }
+          ],
+          artifacts: [
+            { name: "The Daily Breath", teaser: "The two minutes of breath that reset their day",
+              what: "A simple daily ritual inside the community. Members drop in, name how they feel, and get a matched short breath practice to shift it, a calming round, an energizing round, a release. Over time they feel their baseline change, and they feel the community breathing alongside them. It's the small habit that makes your space the first place they open when they're tight.",
+              who: "Members who want your work daily, not just in the live session. The ones who hold tension fast and need something to reach for right then.",
+              create: ["Name the handful of states members live in, like tense, flat, anxious, heavy.","Record a short guided breath for each that shifts it.","Set up a daily check-in space where members drop their word.","Match each state with its breath so they always know what to practice.","Notice out loud who's breathing daily, and name the shifts they report."],
+              include: "Run it as a daily thread or pinned ritual in your Skool community. The shared check-in lets members feel each other's presence, which turns a content library into a place people belong." },
+            { name: "The Breath Library", teaser: "Always the breath practice they need",
+              what: "A growing shelf of short breath practices for the moments real life throws at people, panicking, can't focus, need to cry and can't, wired before bed. Members reach for the one that matches. Because it keeps growing, there's always a reason to return, and members feel it was built around their actual days.",
+              who: "Members who want your breathwork on demand and a community that keeps giving. The ones who stay subscribed because the shelf is never finished.",
+              create: ["Start with the five moments your people name most.","Record one short guided breath for each, clear and specific.","Drop them into one beautifully organized classroom.","Let members request the next one, so the library grows from their real moments.","Announce each addition in the feed so growth feels like a gift."],
+              include: "Build it as a dedicated classroom that visibly grows. Each new addition is a reason to post in the feed and a reason for members to come back in." },
+            { name: "The Breath Journal", teaser: "Watch the breath change you over time",
+              what: "A shared space where members log how they feel before and after breathing and look back to see the change add up. They watch their own baseline shift, learn which breaths do what for them, and see the community doing the same. It turns a felt-but-fleeting shift into a trend they can see, which keeps people practicing past the first week.",
+              who: "Members who lose faith because the breath's effects fade from memory fast. The ones who need proof it's working so they keep showing up to breathe.",
+              create: ["Give members a simple before-and-after check-in, how they felt, which breath they used.","Let them log it fast and look back over weeks to see the trend.","Pair a tense day with a matched breath so the journal does something, not just records.","Show them which practices shift them most in the pattern.","Celebrate the days the breath clearly moved something, out loud."],
+              include: "Run it as an ongoing ritual with a weekly reflection prompt in the feed. The visible trend is what makes the quiet inner work feel real, so members stay long enough to feel it land." }
+          ],
+          experiences: [
+            { name: "The Group Breathwork", teaser: "The whole room breathes at once",
+              what: "A live monthly breathwork session where you guide the whole group through an active journey, then hold space as people surface and share. The breath is the doorway. The depth of breathing together, everyone moving through it in the same room, is what lets people go where they wouldn't alone and keeps them coming back.",
+              who: "Members with a lot held in the body who reach releases in a guided group they can never quite get to on their own.",
+              create: ["Open with grounding and a clear sense of safety so everyone can let go.","Guide the group through an active breath journey for a solid stretch.","Hold space as people move through what surfaces, no rushing.","Leave room for a few to share, no pressure on the rest.","Close with integration and name the next date before you go."],
+              include: "Host it monthly on the Skool calendar as a signature gathering. Post a soft invitation a few days before, and let members share reflections in a thread afterward." },
+            { name: "The Breath Hot Seat", teaser: "Where they bring what's stuck",
+              what: "A casual live where a member names what they're holding and you guide them through a breath to move it on the spot, reading what they need while the room breathes along. Half breathwork, half intuitive read, fully you. The rest of the room feels their own stuck places start to move.",
+              who: "Members who learn by watching you guide a real person's breath and feeling their own body respond.",
+              create: ["Open one live with a single invitation. Tell me what feels stuck.","Take three people, no more, so each gets real depth.","Read what they need, then guide a breath to move it while they feel it shift.","Let the rest of the room breathe alongside.","Save the recording, it becomes content for a week."],
+              include: "Hold it as a recurring live and let members drop what they want looked at in a thread beforehand so the quieter ones still get served. Clip moments from the replay into the feed." },
+            { name: "The Full Moon Breath Ceremony", teaser: "A slow night of breathing it out",
+              what: "A slow, candlelit live pairing a simple releasing intention with an extended group breathwork journey on the full moon. Part ceremony, part deep release, part the kind of gathering people screenshot and tell their friends about. They come to breathe out what they've been carrying and leave lighter and more alive than they came.",
+              who: "The members who joined for the magic, not just the tools. The ones who hold everything in the body and rarely give themselves a sacred night to breathe it out.",
+              create: ["Send a simple releasing intention a few days ahead so everyone arrives ready.","Open with the ritual to name what they're breathing out.","Guide an extended breath journey while the field is open.","Hold about ninety minutes total, slow and candlelit.","Close with grounding and notice who asks when the next one is."],
+              include: "Run it monthly, alternating with your other lives so the rhythm always has something sacred coming. Keep it live-only the first few times." }
+          ]
+        }
+      }
     ]
   },
   { id: 'coach', emoji: '🌿', name: 'Coach', tag: 'Transformation through guidance and strategy',
@@ -617,7 +994,8 @@ const PATHS = [
       { id: 'confidence', name: 'Confidence Coach', blurb: 'Builds self-trust and presence', soon: true },
       { id: 'relationship', name: 'Relationship Coach', blurb: 'Guides connection and repair', soon: true },
       { id: 'somatic', name: 'Somatic Coach', blurb: 'Works through the body and nervous system', soon: true },
-      { id: 'career-pivot', name: 'Career-Pivot Coach', blurb: 'Guides the leap out of corporate', soon: true }
+      { id: 'career-pivot', name: 'Career-Pivot Coach', blurb: 'Guides the leap out of corporate', soon: true },
+      { id: 'business-coach', name: 'Business Coach', blurb: 'Helps people build and grow their business', soon: true }
     ]
   },
   { id: 'hypnotherapist', emoji: '🧠', name: 'Hypnotherapist', tag: 'Subconscious change and reprogramming',
@@ -710,7 +1088,7 @@ function maxFor(laneId) { return LANE_MAX[laneId] || MAX_PER_LANE; }
 let selectedGifts = [];
 const activePaths = new Set();
 let picks = { offers: [], artifacts: [], experiences: [] };
-let currentLane = 0, stage = 'start', todoState = null;
+let openLane = 'challenge', stage = 'start', todoState = null;
 let membership = null, challengePick = null;
 
 const STAGES = [
@@ -851,7 +1229,7 @@ function updateGiftLocks() {
   });
 }
 function updateGiftsNext() { document.getElementById('giftsNext').disabled = selectedGifts.length === 0; }
-document.getElementById('giftsNext').onclick = () => { currentLane = 0; goToStage('build'); };
+document.getElementById('giftsNext').onclick = () => { openLane = 'challenge'; goToStage('build'); };
 function restoreGiftSelections() {
   selectedGifts.forEach(s => {
     const card = document.querySelector('.gift-card[data-gift="' + s.giftId + '"][data-path="' + s.pathId + '"]');
@@ -860,8 +1238,7 @@ function restoreGiftSelections() {
   updateGiftLocks(); updateGiftsNext();
 }
 
-const laneProgress = document.getElementById('laneProgress');
-const laneBuilders = document.getElementById('laneBuilders');
+const laneAcc = document.getElementById('laneAcc');
 const laneCapNote = document.getElementById('laneCapNote');
 const membershipBand = document.getElementById('membershipBand');
 
@@ -886,67 +1263,103 @@ function challengeOptions() {
   return selectedGifts.map(s => { const g = findGift(s.pathId, s.giftId); return g.challenge ? { giftId: g.id, giftName: g.name, challenge: g.challenge } : null; }).filter(Boolean);
 }
 
+function ideaCardChallenge(p) {
+  const picked = challengePick && challengePick.giftId === p.giftId;
+  const it = p.challenge;
+  return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-challenge-gift="' + p.giftId + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + it.name + ' <span class="gift-tag">' + it.length + '</span></div><div class="idea-teaser">' + it.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + it.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + it.who + '</div></div>' + (it.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + it.include + '</div></div>' : '') + '</div></div></div>';
+}
+
+function ideaCardStandard(lm, p) {
+  const picked = picks[lm.id].some(x => x.giftId === p.giftId && x.idx === p.idx);
+  return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-gift="' + p.giftId + '" data-idx="' + p.idx + '" data-lane="' + lm.id + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + p.item.name + '</div><div class="idea-teaser">' + p.item.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + p.item.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + p.item.who + '</div></div>' + (p.item.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + p.item.include + '</div></div>' : '') + '</div></div></div>';
+}
+
+function laneSection(id, num, emoji, name, hint, count, max, bodyHtml, nextLabel) {
+  const open = openLane === id;
+  const done = count > 0;
+  const full = count >= max;
+  const nextRow = nextLabel ? '<div class="lane-next-row"><button class="lane-next-btn" data-next="' + id + '">' + nextLabel + '</button></div>' : '';
+  return '<div class="lane-sec ' + (open ? 'open' : '') + ' ' + (done ? 'done' : '') + '" data-sec="' + id + '">' +
+    '<div class="lane-sec-head" data-head="' + id + '"><div class="lane-sec-num">' + (done ? '✓' : num) + '</div>' +
+    '<div class="lane-sec-title"><div class="lane-sec-name">' + emoji + ' ' + name + '</div><div class="lane-sec-hint">' + hint + '</div></div>' +
+    '<div class="lane-sec-count ' + (full ? 'full' : '') + '">' + count + '/' + max + '</div>' +
+    '<span class="lane-sec-chev">▾</span></div>' +
+    '<div class="lane-sec-body"><div class="lane-sec-inner">' + bodyHtml + nextRow + '</div></div></div>';
+}
+
 function renderLanes() {
   const chOpts = challengeOptions();
-  const tabs = [{ id: 'challenge', label: 'Challenge', emoji: '🚪', count: challengePick ? 1 : 0, max: 1 }].concat(LANE_META.map(lm => ({ id: lm.id, label: lm.label, emoji: lm.emoji, count: picks[lm.id].length, max: maxFor(lm.id) })));
-  laneProgress.innerHTML = tabs.map((t, i) => { const full = t.count >= t.max; return '<div class="lane-chip ' + (i === currentLane ? 'active' : '') + ' ' + (t.count > 0 ? 'done' : '') + '" data-i="' + i + '">' + t.emoji + ' ' + t.label + ' <span class="lc ' + (full ? 'full' : '') + '">' + t.count + '/' + t.max + '</span></div>'; }).join('');
-  laneProgress.querySelectorAll('.lane-chip').forEach(c => c.onclick = () => { currentLane = +c.dataset.i; renderLanes(); laneProgress.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-  const hint = document.getElementById('laneHint');
-  if (hint) hint.textContent = 'Tap each section above to explore it. ' + tabs[currentLane].label + ' is showing now.';
+  let html = '';
 
-  // Challenge lane (index 0)
-  let html = '<div class="lane-builder ' + (currentLane === 0 ? 'active' : '') + '" data-lane="challenge"><div class="step-eyebrow"><span class="se-num">Step 2</span><span class="se-text">Pick your one doorway challenge · then move to offers</span></div><p class="lane-desc">The challenge is your front door. The thing you promote to draw people in. Pick the one you\'ll lead with.</p><div class="challenge-note">In freemium, this runs free to anyone. In a paid model, it becomes your 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid.</div><div class="idea-list">' +
-    chOpts.map(p => {
-      const picked = challengePick && challengePick.giftId === p.giftId;
-      const it = p.challenge;
-      return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-challenge-gift="' + p.giftId + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + it.name + ' <span class="gift-tag">' + it.length + '</span></div><div class="idea-teaser">' + it.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + it.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + it.who + '</div></div>' + (it.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + it.include + '</div></div>' : '') + '</div></div></div>';
-    }).join('') + '</div></div>';
+  // Challenge section
+  const chBody = '<div class="challenge-note">In freemium, this runs free to anyone. In a paid model, it becomes your 7-day free trial doorway, people join the challenge, taste the level for a week, then it converts to paid.</div><div class="idea-list">' + chOpts.map(ideaCardChallenge).join('') + '</div>';
+  html += laneSection('challenge', '2', '🚪', 'Your doorway challenge', 'Pick the one you\'ll lead with', challengePick ? 1 : 0, 1, chBody, null);
 
-  // Standard lanes (index 1+)
-  html += LANE_META.map((lm, li) => {
-    const tabIndex = li + 1;
-    const nextWord = li < LANE_META.length - 1 ? 'then move to ' + LANE_META[li + 1].label.toLowerCase() : 'then see your plan';
+  // Standard sections
+  LANE_META.forEach((lm, li) => {
     const pooled = [];
     selectedGifts.forEach(s => {
       const gift = findGift(s.pathId, s.giftId);
       (gift.lanes[lm.id] || []).forEach((item, idx) => pooled.push({ giftId: gift.id, giftName: gift.name, idx: idx, item: item }));
     });
-    return '<div class="lane-builder ' + (tabIndex === currentLane ? 'active' : '') + '" data-lane="' + lm.id + '"><div class="step-eyebrow"><span class="se-num">Step ' + (tabIndex + 2) + '</span><span class="se-text">Select up to ' + maxFor(lm.id) + ' ' + lm.label.toLowerCase() + ' · ' + nextWord + '</span></div><p class="lane-desc">' + lm.desc + '</p><div class="idea-list">' +
-      pooled.map(p => {
-        const picked = picks[lm.id].some(x => x.giftId === p.giftId && x.idx === p.idx);
-        return '<div class="idea-item ' + (picked ? 'picked' : '') + '" data-gift="' + p.giftId + '" data-idx="' + p.idx + '" data-lane="' + lm.id + '"><div class="idea-top"><button class="idea-pick-btn">' + (picked ? '<span class="ci">✓</span>' : '+') + '</button><div class="idea-main"><div class="idea-headings"><div class="idea-name">' + p.item.name + '</div><div class="idea-teaser">' + p.item.teaser + '</div>' + (selectedGifts.length > 1 ? '<span class="gift-tag">' + p.giftName + '</span>' : '') + '</div><span class="idea-chev">▾</span></div></div><div class="idea-deeper"><div class="idea-deeper-inner"><div class="deeper-block"><div class="deeper-label">What it is</div><div class="deeper-text">' + p.item.what + '</div></div><div class="deeper-block"><div class="deeper-label">Who it\'s for</div><div class="deeper-text">' + p.item.who + '</div></div>' + (p.item.include ? '<div class="deeper-block"><div class="deeper-label">How to include it in your community</div><div class="deeper-text include">' + p.item.include + '</div></div>' : '') + '</div></div></div>';
-      }).join('') + '</div></div>';
-  }).join('');
+    const body = '<p class="lane-desc">' + lm.desc + '</p><div class="idea-list">' + pooled.map(p => ideaCardStandard(lm, p)).join('') + '</div>';
+    const nextLabel = li < LANE_META.length - 1 ? 'Next: ' + LANE_META[li + 1].label + ' →' : 'See my plan ✦';
+    html += laneSection(lm.id, String(li + 3), lm.emoji, lm.label, 'Select up to ' + maxFor(lm.id), picks[lm.id].length, maxFor(lm.id), body, nextLabel);
+  });
 
-  laneBuilders.innerHTML = html;
-  laneCapNote.textContent = currentLane === 0 ? 'Pick one challenge to lead with.' : 'Add up to ' + maxFor(LANE_META[currentLane - 1].id) + ' from this lane. Or none, if it\'s not yours yet.';
+  laneAcc.innerHTML = html;
+  laneCapNote.textContent = '';
   wireLanes();
 }
 
+const LANE_ORDER = ['challenge', 'offers', 'artifacts', 'experiences'];
+function advanceFrom(id) {
+  const i = LANE_ORDER.indexOf(id);
+  if (i < LANE_ORDER.length - 1) { openLane = LANE_ORDER[i + 1]; renderLanes(); scrollToOpenLane(); }
+  else { goToStage('plan'); }
+}
+function scrollToOpenLane() {
+  const el = laneAcc.querySelector('.lane-sec[data-sec="' + openLane + '"]');
+  if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+}
+
 function wireLanes() {
-  laneBuilders.querySelectorAll('.idea-main').forEach(m => m.onclick = () => m.closest('.idea-item').classList.toggle('open'));
-  laneBuilders.querySelectorAll('.idea-pick-btn').forEach(btn => btn.onclick = e => {
+  // Accordion headers toggle open/close
+  laneAcc.querySelectorAll('.lane-sec-head').forEach(h => h.onclick = () => {
+    const id = h.dataset.head;
+    openLane = (openLane === id) ? null : id;
+    renderLanes();
+    if (openLane) scrollToOpenLane();
+  });
+  // Next buttons
+  laneAcc.querySelectorAll('.lane-next-btn').forEach(b => b.onclick = e => { e.stopPropagation(); advanceFrom(b.dataset.next); });
+  // Card expand toggles
+  laneAcc.querySelectorAll('.idea-main').forEach(m => m.onclick = () => m.closest('.idea-item').classList.toggle('open'));
+  // Pick buttons
+  laneAcc.querySelectorAll('.idea-pick-btn').forEach(btn => btn.onclick = e => {
     e.stopPropagation();
     const item = btn.closest('.idea-item');
     if (item.dataset.challengeGift) {
       const gid = item.dataset.challengeGift;
-      if (challengePick && challengePick.giftId === gid) { challengePick = null; }
-      else { const g = selectedGifts.map(s => findGift(s.pathId, s.giftId)).find(x => x.id === gid); challengePick = { giftId: gid, giftName: g.name }; }
-      save(); renderLanes();
+      if (challengePick && challengePick.giftId === gid) { challengePick = null; save(); renderLanes(); }
+      else { const g = selectedGifts.map(s => findGift(s.pathId, s.giftId)).find(x => x.id === gid); challengePick = { giftId: gid, giftName: g.name }; save(); openLane = 'offers'; renderLanes(); scrollToOpenLane(); }
       return;
     }
     const laneId = item.dataset.lane, giftId = item.dataset.gift, idx = +item.dataset.idx;
     const ex = picks[laneId].findIndex(x => x.giftId === giftId && x.idx === idx);
-    if (ex >= 0) { picks[laneId].splice(ex, 1); item.classList.remove('picked'); btn.textContent = '+'; }
+    if (ex >= 0) { picks[laneId].splice(ex, 1); }
     else {
-      if (picks[laneId].length >= maxFor(laneId)) { laneCapNote.style.color = 'var(--pink-vibrant)'; setTimeout(() => laneCapNote.style.color = '', 700); return; }
+      if (picks[laneId].length >= maxFor(laneId)) { flashCap(); return; }
       const gift = selectedGifts.map(s => findGift(s.pathId, s.giftId)).find(g => g.id === giftId);
-      picks[laneId].push({ giftId: giftId, giftName: gift.name, idx: idx }); item.classList.add('picked'); btn.innerHTML = '<span class="ci">✓</span>';
+      picks[laneId].push({ giftId: giftId, giftName: gift.name, idx: idx });
     }
-    const chip = laneProgress.querySelector('.lane-chip[data-i="' + (LANE_META.findIndex(l => l.id === laneId) + 1) + '"] .lc');
-    if (chip) { const n = picks[laneId].length; const mx = maxFor(laneId); chip.textContent = n + '/' + mx; chip.classList.toggle('full', n >= mx); }
-    save();
+    save(); renderLanes();
   });
+}
+
+function flashCap() {
+  const open = laneAcc.querySelector('.lane-sec.open .lane-sec-count');
+  if (open) { open.style.transform = 'scale(1.2)'; open.style.background = 'var(--pink-vibrant)'; open.style.color = '#fff'; setTimeout(() => { open.style.transform = ''; open.style.background = ''; open.style.color = ''; }, 500); }
 }
 
 document.getElementById('buildBack').onclick = () => goToStage('gifts');
@@ -988,18 +1401,28 @@ function buildCommunityParagraph() {
 function buildClaudePrompt(laneId, giftId, giftName, item) {
   const laneWord = laneId === 'challenge' ? 'free challenge that draws people into my community' : (laneId === 'offers' ? 'offer' : (laneId === 'artifacts' ? 'community tool' : 'live experience'));
   const steps = Array.isArray(item.create) ? item.create.map((s, i) => (i + 1) + '. ' + s).join('\n') : (item.start || '');
+  const isArtifact = laneId === 'artifacts';
+  const artifactAsk = isArtifact
+    ? '- Since this is already a tool my members use, suggest one small companion piece that would make it land even better (a prompt, a template, a tracker, or a short guide)\n'
+    : '- Whether an interactive artifact or tool would support this and make it more valuable for my members. If yes, offer to build that artifact with me too, and tell me what it would do\n';
   return 'I\'m building a Skool membership community for my work as a ' + giftName + '. I want to create a ' + laneWord + ' called "' + item.name + '".\n\n' +
     'Here\'s the idea: ' + item.what + '\n\n' +
     'Who it\'s for: ' + item.who + '\n\n' +
     'How I want to build it:\n' + steps + '\n\n' +
     'How it fits in my community: ' + (item.include || 'It lives inside my Skool community as part of the member experience.') + '\n\n' +
-    'Please help me build this out fully. I\'d like:\n' +
+    'Before you build anything, ask me a few questions so this comes out custom to me:\n' +
+    '- What my specific niche is and who my members really are\n' +
+    '- My voice and style, so everything sounds like me\n' +
+    '- Anything you need to know about how I want to run this or what I want members to feel\n' +
+    artifactAsk +
+    '- Anything else I might want to add or change to make this truly mine\n\n' +
+    'Once you\'ve asked those and I\'ve answered, please help me build this out fully. I\'d like:\n' +
     '- A clear name and one-line description I can use on my Skool page\n' +
     '- The full structure or outline, broken into the pieces I need to create\n' +
     '- Any scripts, prompts, or copy I\'d need, written in a warm, grounded, down-to-earth voice with no hype and no jargon\n' +
     '- A simple step-by-step plan to launch it inside my Skool community\n' +
     '- One idea for how to invite my members to it in the community feed\n\n' +
-    'Ask me anything you need to know about my niche, my members, or my style before you begin.';
+    'Start by asking me your questions.';
 }
 
 function planItemLine(laneId, p, kindOverride) {
@@ -1042,7 +1465,7 @@ function buildMembershipPlan() {
     h += '</div></div>';
 
     // Low ticket
-    h += '<div class="ms-tier ms-tier-low"><div class="ms-tier-head"><div class="ms-tier-name">Low-ticket paid</div><div class="ms-tier-price">around $5 to $8 / month</div></div><div class="ms-tier-why">The easy yes. ' + lowBelongs + '</div>';
+    h += '<div class="ms-tier ms-tier-low"><div class="ms-tier-head"><div class="ms-tier-name">Standard (low ticket paid)</div><div class="ms-tier-price">around $5 to $8 / month</div></div><div class="ms-tier-why">The easy yes. ' + lowBelongs + '</div>';
     h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
     if (offers.length) h += planItemLine('offers', offers[0], 'offer · runs well as a course');
     if (artifacts.length > 1) artifacts.slice(1).forEach(p => h += planItemLine('artifacts', p));
@@ -1068,7 +1491,7 @@ function buildMembershipPlan() {
     h += '</div></div>';
 
     // Low ticket
-    h += '<div class="ms-tier ms-tier-low"><div class="ms-tier-head"><div class="ms-tier-name">Low-ticket paid</div><div class="ms-tier-price">around $5 to $8 / month</div></div><div class="ms-tier-why">Where most people land after the trial. ' + lowBelongs + '</div>';
+    h += '<div class="ms-tier ms-tier-low"><div class="ms-tier-head"><div class="ms-tier-name">Standard (low ticket paid)</div><div class="ms-tier-price">around $5 to $8 / month</div></div><div class="ms-tier-why">Where most people land after the trial. ' + lowBelongs + '</div>';
     h += '<div class="ms-tier-picks"><div class="ms-picks-label">From your picks</div>';
     if (offers.length) h += planItemLine('offers', offers[0], 'offer · runs well as a course');
     if (artifacts.length) artifacts.forEach(p => h += planItemLine('artifacts', p));
