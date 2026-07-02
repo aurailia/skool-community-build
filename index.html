@@ -2554,7 +2554,20 @@ PATHS.forEach(p => {
 filterRow.onclick = e => {
   const btn = e.target.closest('.path-btn'); if (!btn) return;
   const id = btn.dataset.path;
-  if (activePaths.has(id)) { activePaths.delete(id); btn.classList.remove('active'); }
+  if (activePaths.has(id)) {
+    activePaths.delete(id); btn.classList.remove('active');
+    // Deselecting a path clears any gifts picked from it, so nothing stale lingers
+    const removed = selectedGifts.filter(s => s.pathId === id);
+    if (removed.length) {
+      selectedGifts = selectedGifts.filter(s => s.pathId !== id);
+      removed.forEach(s => {
+        const card = document.querySelector('.gift-card[data-gift="' + s.giftId + '"][data-path="' + id + '"]');
+        if (card) card.classList.remove('selected');
+        clearGiftDownstream(s.giftId);
+      });
+      updateGiftLocks(); updateGiftsNext(); save(); renderNav();
+    }
+  }
   else { activePaths.add(id); btn.classList.add('active'); }
   applyPathFilter();
 };
@@ -2569,6 +2582,11 @@ function applyPathFilter() {
   const showAll = activePaths.size === 0;
   document.querySelectorAll('.gift-group').forEach(g => g.classList.toggle('hidden', !(showAll || activePaths.has(g.dataset.path))));
 }
+function clearGiftDownstream(giftId) {
+  ['offers','artifacts','experiences'].forEach(lane => { picks[lane] = picks[lane].filter(p => p.giftId !== giftId); });
+  if (challengePick && challengePick.giftId === giftId) challengePick = null;
+  if (todoState) { todoState.chosen = (todoState.chosen || []).filter(k => k.indexOf('::' + giftId + '::') === -1); }
+}
 giftGroups.onclick = e => {
   const card = e.target.closest('.gift-card');
   if (!card || card.classList.contains('soon')) return;
@@ -2576,10 +2594,7 @@ giftGroups.onclick = e => {
   const i = selectedGifts.findIndex(s => s.giftId === giftId && s.pathId === pathId);
   if (i >= 0) {
     selectedGifts.splice(i, 1); card.classList.remove('selected');
-    // drop any picks tied to this gift so stale items don't linger
-    ['offers','artifacts','experiences'].forEach(lane => { picks[lane] = picks[lane].filter(p => p.giftId !== giftId); });
-    if (challengePick && challengePick.giftId === giftId) challengePick = null;
-    if (todoState) { todoState.chosen = (todoState.chosen || []).filter(k => k.indexOf('::' + giftId + '::') === -1); }
+    clearGiftDownstream(giftId);
   }
   else { if (selectedGifts.length >= MAX_GIFTS) return; selectedGifts.push({ pathId: pathId, giftId: giftId }); card.classList.add('selected'); }
   updateGiftLocks(); updateGiftsNext(); save(); renderNav();
